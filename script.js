@@ -334,6 +334,121 @@ const questionPool = [
     verify: ["podman ps -a"],
     hint: "Use podman run with volume mounts and podman generate systemd for user unit",
   },
+  // Additional realistic EX200-style tasks added for higher fidelity practice
+  {
+    desc: "Create persistent /mnt/backup fstab entry using UUID for /dev/sdd1 and mount it",
+    points: 12,
+    cmds: [
+      "blkid /dev/sdd1",
+      "mkdir -p /mnt/backup",
+      "echo 'UUID=$(blkid -s UUID -o value /dev/sdd1) /mnt/backup ext4 defaults 0 0' >> /etc/fstab",
+      "mount -a",
+    ],
+    verify: ["mount | grep /mnt/backup", "grep /mnt/backup /etc/fstab"],
+    hint: "Use blkid to get UUID and add an fstab line referencing UUID",
+  },
+  {
+    desc: "Create systemd service /etc/systemd/system/healthcheck.service to run /usr/local/bin/health-check.sh and enable it",
+    points: 12,
+    cmds: [
+      "cat > /etc/systemd/system/healthcheck.service << 'EOF'\n[Unit]\nDescription=Health Check Service\n[Service]\nType=oneshot\nExecStart=/usr/local/bin/health-check.sh\n[Install]\nWantedBy=multi-user.target\nEOF",
+      "chmod +x /usr/local/bin/health-check.sh || true",
+      "systemctl daemon-reload",
+      "systemctl enable --now healthcheck.service",
+    ],
+    verify: [
+      "systemctl is-enabled healthcheck.service",
+      "systemctl status healthcheck.service",
+    ],
+    hint: "Create a unit file, reload systemd and enable the service",
+  },
+  {
+    desc: "Mount tmpfs at /run/cache with size=100M via /etc/fstab",
+    points: 8,
+    cmds: [
+      "mkdir -p /run/cache",
+      "echo 'tmpfs /run/cache tmpfs rw,size=100M 0 0' >> /etc/fstab",
+      "mount -a",
+    ],
+    verify: ["mount | grep /run/cache"],
+    hint: "Add a tmpfs line to /etc/fstab and mount -a",
+  },
+  {
+    desc: "Configure firewall masquerading and enable forwarding in the public zone",
+    points: 10,
+    cmds: [
+      "firewall-cmd --permanent --add-masquerade",
+      "firewall-cmd --permanent --zone=public --add-forward-port=port=80:proto=tcp:toport=8080",
+      "firewall-cmd --reload",
+    ],
+    verify: ["firewall-cmd --list-all | grep masquerade"],
+    hint: "Use --add-masquerade and add-forward-port then reload",
+  },
+  {
+    desc: "Add SSH public key to /home/alice/.ssh/authorized_keys for passwordless login (assume key provided)",
+    points: 8,
+    cmds: [
+      "mkdir -p /home/alice/.ssh && chmod 700 /home/alice/.ssh",
+      "echo '<public-key>' >> /home/alice/.ssh/authorized_keys && chmod 600 /home/alice/.ssh/authorized_keys",
+      "chown -R alice:alice /home/alice/.ssh",
+    ],
+    verify: ["ls -l /home/alice/.ssh/authorized_keys"],
+    hint: "Place the public key in authorized_keys with correct permissions and ownership",
+  },
+  {
+    desc: "Create LUKS encrypted mapping for /dev/sdc1 as cryptdata and add to /etc/crypttab and /etc/fstab (mount at /secure)",
+    points: 16,
+    cmds: [
+      "cryptsetup luksFormat /dev/sdc1 || true",
+      "cryptsetup open /dev/sdc1 cryptdata || true",
+      "mkfs.xfs /dev/mapper/cryptdata || true",
+      "mkdir -p /secure",
+      "echo 'cryptdata UUID=$(blkid -s UUID -o value /dev/sdc1) none luks' >> /etc/crypttab",
+      "echo '/dev/mapper/cryptdata /secure xfs defaults 0 0' >> /etc/fstab",
+      "systemctl daemon-reload",
+    ],
+    verify: ["lsblk | grep cryptdata", "grep cryptdata /etc/crypttab"],
+    hint: "Use cryptsetup to create LUKS and add entry to /etc/crypttab and fstab",
+  },
+  {
+    desc: "Create systemd timer backup.timer to run backup.service daily at 03:00",
+    points: 10,
+    cmds: [
+      "cat > /etc/systemd/system/backup.service << 'EOF'\n[Unit]\nDescription=Daily Backup\n[Service]\nType=oneshot\nExecStart=/usr/local/bin/backup.sh\nEOF",
+      "cat > /etc/systemd/system/backup.timer << 'EOF'\n[Unit]\nDescription=Daily Backup Timer\n[Timer]\nOnCalendar=*-*-* 03:00:00\nPersistent=true\n[Install]\nWantedBy=timers.target\nEOF",
+      "systemctl daemon-reload",
+      "systemctl enable --now backup.timer",
+    ],
+    verify: ["systemctl list-timers | grep backup.timer"],
+    hint: "Create .service and .timer units and enable the timer",
+  },
+  {
+    desc: "Configure NFS export /srv/nfs to allow 192.168.50.0/24 and enable nfs-server",
+    points: 12,
+    cmds: [
+      "mkdir -p /srv/nfs && chown nfsnobody:nfsnobody /srv/nfs",
+      "echo '/srv/nfs 192.168.50.0/24(rw,sync,no_root_squash)' >> /etc/exports",
+      "systemctl enable --now nfs-server",
+      "exportfs -r",
+      "firewall-cmd --permanent --add-service=nfs && firewall-cmd --reload",
+    ],
+    verify: ["exportfs -v | grep /srv/nfs"],
+    hint: "Add export to /etc/exports, enable nfs-server and open firewall",
+  },
+  {
+    desc: "Create user 'examuser' with skeleton files from /etc/skel and ensure home exists",
+    points: 6,
+    cmds: ["useradd -m -k /etc/skel examuser", "passwd examuser || true"],
+    verify: ["getent passwd examuser", "ls -la /home/examuser"],
+    hint: "useradd -m creates home and -k specify skeleton dir",
+  },
+  {
+    desc: "Ensure SELinux boolean httpd_can_network_connect_db is on persistently",
+    points: 6,
+    cmds: ["setsebool -P httpd_can_network_connect_db on"],
+    verify: ["getsebool httpd_can_network_connect_db"],
+    hint: "setsebool -P boolean on",
+  },
   // --- end inserted EX200 tasks ---
   // User Management (20 variations)
   {
