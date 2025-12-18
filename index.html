@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RHCSA EX200 Realistic Exam System</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- Welcome Screen -->
+      <div id="welcomeScreen" class="welcome-screen">
+        <div class="welcome-title">🎯 RHCSA EX200 Real Exam System</div>
+
+        <div class="instructions">
+          <h3>📋 Exam Instructions</h3>
+          <ul>
+            <li>
+              You have <strong>2 hours 30 minutes</strong> to complete 20 tasks
+            </li>
+            <li>
+              Each exam has <strong>different questions</strong> - unlimited
+              practice!
+            </li>
+            <li>Submit your solution (commands) for each task</li>
+            <li>
+              Minimum passing score: <strong>210/300 points (70%)</strong>
+            </li>
+            <li>System checks if your commands are correct</li>
+            <li>Unanswered tasks = 0 points</li>
+          </ul>
+        </div>
+
+        <div class="instructions">
+          <h3>💻 How It Works</h3>
+          <ul>
+            <li>
+              <strong>Random Questions:</strong> Every exam has different tasks
+              from our <strong>150+ question pool</strong>
+            </li>
+            <li>
+              <strong>Realistic Scoring:</strong> Correct=Full points,
+              Partial=50%, Wrong/Unanswered=0
+            </li>
+            <li>
+              <strong>Track Progress:</strong> See your improvement over 10+
+              attempts
+            </li>
+            <li>
+              <strong>Detailed Feedback:</strong> Know exactly which tasks you
+              got right/wrong
+            </li>
+          </ul>
+        </div>
+
+        <!-- Exam History -->
+        <div id="examHistorySection" class="exam-history hidden">
+          <h3>📊 Your Exam History</h3>
+          <div id="examHistoryList"></div>
+
+          <div class="progress-tracker">
+            <div class="progress-stat">
+              <span>Total Attempts:</span>
+              <strong id="totalAttempts">0</strong>
+            </div>
+            <div class="progress-stat">
+              <span>Highest Score:</span>
+              <strong id="highestScore">0/300</strong>
+            </div>
+            <div class="progress-stat">
+              <span>Average Score:</span>
+              <strong id="avgScore">0/300</strong>
+            </div>
+            <div class="progress-stat">
+              <span>Pass Rate:</span>
+              <strong id="passRate">0%</strong>
+            </div>
+          </div>
+
+          <div class="chart-container" id="scoreChart"></div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px">
+          <button
+            class="btn btn-primary"
+            onclick="startExam()"
+            style="font-size: 20px; padding: 15px 40px"
+          >
+            🚀 Start New Exam
+          </button>
+          <button
+            class="btn btn-danger"
+            onclick="resetHistory()"
+            style="font-size: 16px; padding: 12px 30px; margin-left: 10px"
+          >
+            🗑️ Reset History
+          </button>
+        </div>
+      </div>
+
+      <!-- Exam Interface -->
+      <div id="examInterface" class="hidden">
+        <!-- Header -->
+        <div class="header">
+          <div style="display: flex; align-items: center; gap: 15px">
+            <div class="title">RHCSA EX200 - Live Exam</div>
+            <div class="exam-number" id="examNumber">Exam #1</div>
+          </div>
+          <div class="timer">
+            <div class="timer-display" id="timerDisplay">02:30:00</div>
+            <button
+              class="btn btn-success"
+              onclick="submitExam()"
+              style="font-size: 18px"
+            >
+              📤 Submit Exam
+            </button>
+          </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content-grid">
+          <!-- Task Panel -->
+          <div class="task-panel">
+            <div class="task-header">
+              <div style="font-size: 20px; font-weight: bold; color: #2d3748">
+                📝 Exam Tasks (20 Questions)
+              </div>
+            </div>
+            <div class="task-list" id="taskList"></div>
+          </div>
+
+          <!-- Sidebar -->
+          <div>
+            <!-- Progress Stats -->
+            <div class="stats-card">
+              <div class="stats-title">📊 Exam Progress</div>
+              <div class="stat-row">
+                <span style="color: #718096">Solutions Submitted</span>
+                <span class="stat-value" id="submittedCount">0/20</span>
+              </div>
+              <div class="stat-row">
+                <span style="color: #718096">Current Score</span>
+                <span class="stat-value" id="currentScore">0/300</span>
+              </div>
+              <div class="stat-row">
+                <span style="color: #718096">Time Remaining</span>
+                <span class="stat-value" id="timeRemaining">150 min</span>
+              </div>
+              <div class="progress-bar">
+                <div
+                  class="progress-fill"
+                  id="progressBar"
+                  style="width: 0%"
+                ></div>
+              </div>
+            </div>
+
+            <!-- Quick Reference -->
+            <div class="stats-card">
+              <div class="stats-title">⚡ Verification Commands</div>
+              <div class="verification-list">
+                <div><strong>Before Submit:</strong></div>
+                <div>• systemctl --failed</div>
+                <div>• getenforce</div>
+                <div>• findmnt --verify</div>
+                <div>• firewall-cmd --list-all</div>
+                <div>• df -h</div>
+                <div>• swapon --show</div>
+                <div>• podman ps</div>
+                <div
+                  style="margin-top: 10px; color: #dc2626; font-weight: bold"
+                >
+                  ⚠️ REBOOT MANDATORY!
+                </div>
+              </div>
+            </div>
+
+            <!-- Scoring Guide -->
+            <div class="stats-card">
+              <div class="stats-title">🎯 Scoring</div>
+              <div class="verification-list">
+                <div style="color: #059669">✓ Correct: Full points</div>
+                <div style="color: #d97706">◐ Partial: 50% points</div>
+                <div style="color: #dc2626">✗ Wrong: 0 points</div>
+                <div style="color: #6b7280">○ Unanswered: 0 points</div>
+                <div style="margin-top: 10px; font-weight: bold">
+                  Pass: 210+ / 300
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Modal -->
+      <div id="resultsModal" class="modal">
+        <div class="modal-content">
+          <div class="modal-title">🎯 Exam Results</div>
+          <div class="score-display" id="finalScore">0/300</div>
+          <div class="pass-badge" id="passBadge"></div>
+
+          <div
+            style="
+              font-size: 20px;
+              font-weight: bold;
+              margin-bottom: 15px;
+              color: #2d3748;
+            "
+          >
+            Detailed Breakdown:
+          </div>
+          <div class="result-breakdown" id="resultBreakdown"></div>
+
+          <div
+            style="
+              display: flex;
+              gap: 10px;
+              justify-content: center;
+              margin-top: 30px;
+              flex-wrap: wrap;
+            "
+          >
+            <button class="btn btn-primary" onclick="restartExam()">
+              🔄 New Exam
+            </button>
+            <button class="btn btn-success" onclick="downloadResults()">
+              💾 Download Results
+            </button>
+            <button class="btn btn-warning" onclick="reviewExam()">
+              📝 Review Answers
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+  <footer>Developed by samiulAsumel</footer>
+</html>
