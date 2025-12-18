@@ -116,7 +116,225 @@ function toggleAnswer(id, btn) {
 }
 
 // MASSIVE QUESTION POOL (150+ unique questions)
+// --- User-supplied EX200 tasks (inserted) ---
 const questionPool = [
+  {
+    desc: "[servera] Configure static networking: 172.25.250.10/24 gateway 172.25.250.254 dns 172.24.254.254 hostname servera.lab.example.com",
+    points: 15,
+    cmds: [
+      'nmcli connection modify "Wired connection 1" ipv4.addresses 172.25.250.10/24 ipv4.gateway 172.25.250.254 ipv4.dns 172.24.254.254',
+      'nmcli connection modify "Wired connection 1" ipv4.method manual',
+      'nmcli connection up "Wired connection 1"',
+      "hostnamectl set-hostname servera.lab.example.com",
+    ],
+    verify: ["ip a", "hostnamectl"],
+    hint: "Use nmcli to modify the connection, set ipv4.method to manual and set hostname with hostnamectl",
+  },
+  {
+    desc: "[servera] Configure default repos to content.example.com (rht and errata)",
+    points: 10,
+    cmds: [
+      "cat > /etc/yum.repos.d/exam.repo << EOF\n[demo1]\nname=demo1 repo\nbaseurl=http://content.example.com/rhel9.0/x86_64/rhcsa-practice/rht\nenabled=1\ngpgcheck=0\n\n[demo2]\nname=demo2 repo\nbaseurl=http://content.example.com/rhel9.0/x86_64/rhcsa-practice/errata\nenabled=1\ngpgcheck=0\nEOF",
+      "dnf repolist",
+    ],
+    verify: ["dnf repolist"],
+    hint: "Create a .repo file under /etc/yum.repos.d with baseurl entries",
+  },
+  {
+    desc: "[servera] Create group sharegrp and users harry,natasha (secondary sharegrp) and copper (nologin); set password redhat",
+    points: 15,
+    cmds: [
+      "groupadd sharegrp",
+      "useradd -G sharegrp harry",
+      "useradd -G sharegrp natasha",
+      "useradd -s /sbin/nologin copper",
+      'echo -e "redhat\nredhat" | passwd harry',
+      'echo -e "redhat\nredhat" | passwd natasha',
+      'echo -e "redhat\nredhat" | passwd copper',
+    ],
+    verify: ["getent group sharegrp", "id harry", "id natasha"],
+    hint: "Use groupadd, useradd -G for secondary groups and useradd -s /sbin/nologin for no shell",
+  },
+  {
+    desc: "[servera] Create collaborative directory /var/shares owned by sharegrp, perms 2770 (SGID)",
+    points: 10,
+    cmds: [
+      "mkdir -p /var/shares",
+      "chown :sharegrp /var/shares",
+      "chmod 2770 /var/shares",
+    ],
+    verify: ["ls -ld /var/shares"],
+    hint: "chown :GROUP and chmod 2770 to set SGID and restrict others",
+  },
+  {
+    desc: "[servera] Extract all lines containing 'ich' from /usr/share/mime/packages/freedesktop.org.xml into /root/lines preserving order and no empty lines",
+    points: 8,
+    cmds: [
+      "grep ich /usr/share/mime/packages/freedesktop.org.xml > /root/lines",
+    ],
+    verify: ["wc -l /root/lines", "head -n1 /root/lines"],
+    hint: "Use grep and redirect output; grep preserves original order",
+  },
+  {
+    desc: "[servera] Find files owned by natasha and save list to /tmp/output",
+    points: 8,
+    cmds: ["find / -user natasha -type f > /tmp/output"],
+    verify: ["wc -l /tmp/output"],
+    hint: "find / -user USER -type f",
+  },
+  {
+    desc: "[servera] Create user fred with UID 3945 and password iamredhatman",
+    points: 8,
+    cmds: [
+      "useradd -u 3945 fred",
+      'echo -e "iamredhatman\niamredhatman" | passwd fred',
+    ],
+    verify: ["getent passwd fred"],
+    hint: "useradd -u UID username and passwd to set password",
+  },
+  {
+    desc: "[servera] Save lines containing 'nologin' from /etc/passwd to /root/strings",
+    points: 6,
+    cmds: ["grep nologin /etc/passwd > /root/strings"],
+    verify: ["wc -l /root/strings"],
+    hint: "Use grep and redirect",
+  },
+  {
+    desc: "[servera] Configure chrony to use classroom.example.com as NTP server and enable chronyd",
+    points: 10,
+    cmds: [
+      "dnf install -y chrony",
+      "sed -i '/^server /d' /etc/chrony.conf; echo 'server classroom.example.com iburst' >> /etc/chrony.conf",
+      "systemctl enable --now chronyd",
+    ],
+    verify: ["chronyc sources -v"],
+    hint: "Add server to /etc/chrony.conf and enable chronyd",
+  },
+  {
+    desc: "[servera] Configure cron for user natasha to run /bin/echo hello daily at 14:23",
+    points: 6,
+    cmds: [
+      "crontab -u natasha -l 2>/dev/null | { cat; echo '23 14 * * * /bin/echo hello'; } | crontab -u natasha -",
+    ],
+    verify: ["crontab -l -u natasha"],
+    hint: "Use crontab -u user -e or programmatically append line",
+  },
+  {
+    desc: "[servera] Create backup /root/backup.tar.bz2 of /usr/local using bzip2 and ensure SELinux is enforcing",
+    points: 12,
+    cmds: [
+      "tar -cjf /root/backup.tar.bz2 /usr/local",
+      "setenforce 1 || true",
+      "sed -i 's/^SELINUX=.*/SELINUX=enforcing/' /etc/selinux/config",
+    ],
+    verify: ["ls -lh /root/backup.tar.bz2", "getenforce"],
+    hint: "tar -cjf creates bzip2 archive; setenforce and update /etc/selinux/config for persistence",
+  },
+  {
+    desc: "[servera] Create script /root/find.sh to copy files 30K-60K from /etc to /root/data",
+    points: 10,
+    cmds: [
+      'cat > /root/find.sh << "EOF"\n#!/bin/bash\nDEST_DIR="/root/data"\nmkdir -p "$DEST_DIR"\nfind /etc -type f -size +30k -size -60k -exec cp {} "$DEST_DIR" ;\necho "Done"\nEOF',
+      "chmod +x /root/find.sh",
+    ],
+    verify: ["ls -ld /root/find.sh", "wc -l /root/data 2>/dev/null || true"],
+    hint: "Use find with -size and -exec cp to copy files to destination",
+  },
+  {
+    desc: "[servera] Allow httpd to serve content on port 82 and open firewall/SELinux accordingly",
+    points: 10,
+    cmds: [
+      "semanage port -a -t http_port_t -p tcp 82 || true",
+      "firewall-cmd --permanent --add-port=82/tcp",
+      "firewall-cmd --reload",
+      "systemctl enable --now httpd",
+    ],
+    verify: ["ss -ltnp | grep :82", "semanage port -l | grep http"],
+    hint: "semanage port -a, firewall-cmd --add-port, then start httpd",
+  },
+  {
+    desc: "[servera] Set default password max days for new users to 30 days",
+    points: 6,
+    cmds: ["sed -i 's/^PASS_MAX_DAYS.*/PASS_MAX_DAYS   30/' /etc/login.defs"],
+    verify: ["grep PASS_MAX_DAYS /etc/login.defs"],
+    hint: "Edit /etc/login.defs PASS_MAX_DAYS to 30",
+  },
+  {
+    desc: "[servera] Configure autofs to automount utility.lab.example.com:/netdir/remoteuser15 at /netdir/remoteuser15",
+    points: 12,
+    cmds: [
+      "dnf install -y autofs",
+      'echo "/netdir /etc/auto.ex200" >> /etc/auto.master',
+      'echo "remoteuser15 -rw,sync utility.lab.example.com:/netdir/remoteuser15" > /etc/auto.ex200',
+      "systemctl enable --now autofs",
+    ],
+    verify: ["ls /netdir/remoteuser15 || true"],
+    hint: "Add an indirect map in /etc/auto.master and proper map file, then enable autofs",
+  },
+  {
+    desc: "[serverb] Add additional 512MiB swap partition and enable at boot (do not remove existing swap)",
+    points: 12,
+    cmds: [
+      "# Use parted to create partition then:",
+      "parted /dev/vdb mkpart primary linux-swap 1001MB 1513MB || true",
+      "udevadm settle",
+      "mkswap /dev/vdb2",
+      "swapon /dev/vdb2",
+      'echo "/dev/vdb2 swap swap defaults 0 0" >> /etc/fstab',
+    ],
+    verify: ["swapon --show"],
+    hint: "Create new partition, mkswap, swapon and add to /etc/fstab",
+  },
+  {
+    desc: "[serverb] Create LV 'database' in VG 'datastore' with 50 extents and 16MiB extent size, format vfat and mount /mnt/database",
+    points: 15,
+    cmds: [
+      "vgchange -ay datastore || true",
+      "lvcreate -n database -l 50 datastore || true",
+      "mkfs.vfat /dev/datastore/database || true",
+      "mkdir -p /mnt/database",
+      'echo "/dev/datastore/database /mnt/database vfat defaults 0 0" >> /etc/fstab',
+      "mount -a",
+    ],
+    verify: ["lsblk", "df -h /mnt/database"],
+    hint: "lvcreate -l 50 -n name VG, mkfs.vfat and add to /etc/fstab",
+  },
+  {
+    desc: "[serverb] Resize LV 'database' to approximately 850MB (within 830-865MB)",
+    points: 10,
+    cmds: ["lvresize -L 850M -r /dev/datastore/database"],
+    verify: ["lvdisplay /dev/datastore/database", "df -h /mnt/database"],
+    hint: "lvresize -L SIZE -r resizes and resizes filesystem when supported",
+  },
+  {
+    desc: "[serverb] Set tuned profile to default",
+    points: 6,
+    cmds: ["tuned-adm profile default"],
+    verify: ["tuned-adm active"],
+    hint: "tuned-adm profile default",
+  },
+  {
+    desc: "[serverb] Configure sudoers: allow members of admin group to sudo without password",
+    points: 6,
+    cmds: [
+      "echo '%admin ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/admin-nopass",
+    ],
+    verify: ["sudo -l -U someadmin 2>/dev/null || true"],
+    hint: "Create /etc/sudoers.d file with %group ALL=(ALL) NOPASSWD: ALL",
+  },
+  {
+    desc: "[container] Create podman container from registry.redhat.io/rsyslog, run as rootless user devops and map /opt/files -> /opt/incoming and /opt/processed -> /opt/outcoming; generate systemd user service container-demo1",
+    points: 15,
+    cmds: [
+      "podman pull registry.redhat.io/rsyslog",
+      "podman run -d --name container-demo1 -v /opt/files:/opt/incoming:Z -v /opt/processed:/opt/outcoming:Z --userns keep-id --user devops registry.redhat.io/rsyslog || true",
+      "podman generate systemd --name container-demo1 --files --new --uidmap || true",
+      "loginctl enable-linger devops || true",
+    ],
+    verify: ["podman ps -a"],
+    hint: "Use podman run with volume mounts and podman generate systemd for user unit",
+  },
+  // --- end inserted EX200 tasks ---
   // User Management (20 variations)
   {
     desc: "Create user 'john' with UID 2500, primary group 'developers', shell /bin/bash",
