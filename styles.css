@@ -680,3 +680,87 @@ footer {
     color: white;
     margin-top: 20px;
 }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .timer {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .welcome-screen {
+        padding: 20px;
+        margin: 20px auto;
+    }
+    
+    .welcome-title {
+        font-size: 28px;
+    }
+    
+    .category-filter {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .category-btn {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+    
+    .modal-content {
+        padding: 20px;
+        margin: 10px;
+    }
+    
+    .score-display {
+        font-size: 42px;
+    }
+    
+    .pass-badge {
+        font-size: 20px;
+        padding: 15px;
+    }
+}
+
+/* Scrollbar styling */
+.task-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.task-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.task-list::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 4px;
+}
+
+.task-list::-webkit-scrollbar-thumb:hover {
+    background: #5568d3;
+}
+
+/* Print styles */
+@media print {
+    .modal-content {
+        box-shadow: none;
+        max-width: 100%;
+        max-height: none;
+    }
+    
+    .btn {
+        display: none;
+    }
+    
+    .timer-display {
+        border: none;
+        background: none;
+    }
+}
