@@ -61,9 +61,7 @@ body {
     border: 2px solid #e2e8f0;
 }
 
-padding: 12px 20px;
-/* normal padding; removed extra top gap */
-padding: 18px 20px 12px 20px;
+
 
 /* larger top padding so first line has vertical gap */
 .timer-display.warning {
