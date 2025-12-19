@@ -4,6 +4,418 @@ let tasks = [];
 let examSubmitted = false;
 let examHistory = [];
 let currentExamNumber = 1;
+let selectedCategory = "all";
+
+function setPracticeCategory(cat, btn) {
+  selectedCategory = cat;
+  document
+    .querySelectorAll(".category-btn")
+    .forEach((b) => b.classList.remove("active"));
+  if (btn && btn.classList) btn.classList.add("active");
+}
+
+// Assign lightweight categories based on keywords (if not explicitly provided)
+function assignCategoriesToPool() {
+  // Improved categorization: use desc, cmds, and verify arrays to determine category.
+  const patterns = [
+    [
+      "system-access",
+      /\b(login|su\b|sudo\b|root password|grub|boot|rd\.break|boot process)\b/i,
+    ],
+    [
+      "files-directories",
+      /\b(cp\b|mv\b|rm\b|mkdir\b|rmdir\b|link\b|umask\b|chown\b|chgrp\b)\b/i,
+    ],
+    [
+      "users-groups",
+      /\b(useradd\b|usermod\b|userdel\b|groupadd\b|groupdel\b|chage\b|passwd\b)\b/i,
+    ],
+    ["acl", /\b(getfacl\b|setfacl\b|\bacl\b|default acl)\b/i],
+    [
+      "selinux",
+      /\b(selinux|semanage\b|restorecon\b|getenforce\b|sestatus\b|setsebool\b)\b/i,
+    ],
+    [
+      "networking",
+      /\b(nmcli\b|hostnamectl\b|ipv4\b|gateway\b|dns\b|ip a\b|ss\b|ping\b|ip addr\b)\b/i,
+    ],
+    ["firewall", /\b(firewall-cmd\b|firewall\b|rich rule|zones|ports)\b/i],
+    [
+      "software-management",
+      /\b(dnf\b|repo\b|yum\b|rpm\b|package\b|repolist\b)\b/i,
+    ],
+    [
+      "processes-services",
+      /\b(ps\b|top\b|kill\b|pkill\b|nice\b|renice\b|systemctl\b|service\b|targets\b)\b/i,
+    ],
+    [
+      "storage-basic",
+      /\b(pvcreate\b|vgcreate\b|lvcreate\b|lvextend\b|lvreduce\b|mkfs\b|lsblk\b|blkid\b|fstab\b|mount\b)\b/i,
+    ],
+    [
+      "lvm",
+      /\b(lvm\b|lvcreate\b|vg\b|pv\b|lvextend\b|lvresize\b|lvreduce\b)\b/i,
+    ],
+    ["swap", /\b(swap\b|mkswap\b|swapon\b|swapfile)\b/i],
+    [
+      "boot-kernel",
+      /\b(boot\b|kernel\b|rescue\b|emergency\b|grub2\b|rd\.break)\b/i,
+    ],
+    [
+      "archive-compression",
+      /\b(tar\b|gzip\b|bzip2\b|xz\b|archive\b|compress\b)\b/i,
+    ],
+    ["searching-text", /\b(grep\b|find\b|sort\b|cut\b|awk\b|wc\b|sed\b)\b/i],
+    [
+      "bash-shell",
+      /\b(shell\b|bash\b|aliases\b|redirection\b|pipes\b|history\b)\b/i,
+    ],
+    ["scheduling", /\b(cron\b|at\b|anacron\b|timer\b|crontab\b)\b/i],
+    [
+      "logging-time",
+      /\b(journalctl\b|rsyslog\b|timedatectl\b|timezone\b|persistent logs)\b/i,
+    ],
+    ["containers-podman", /\b(podman\b|container\b|images\b|volumes\b)\b/i],
+    [
+      "exam-environment",
+      /\b(man pages|tab completion|tmux\b|no internet|time management)\b/i,
+    ],
+  ];
+
+  questionPool.forEach((q) => {
+    // If category already set and looks valid, keep it
+    if (q.category && q.category !== "misc") return;
+
+    const textFields = [
+      String(q.desc || ""),
+      ...(Array.isArray(q.cmds) ? q.cmds : []),
+      ...(Array.isArray(q.verify) ? q.verify : []),
+    ]
+      .join(" \n ")
+      .toLowerCase();
+
+    // try pattern matching
+    for (const [cat, rx] of patterns) {
+      if (rx.test(textFields)) {
+        q.category = cat;
+        break;
+      }
+    }
+
+    // Fallbacks for specific command checks (ensure users-groups captures chage/chpasswd patterns)
+    if (!q.category || q.category === "misc") {
+      const cmds = Array.isArray(q.cmds) ? q.cmds.join(" ") : "";
+      if (/chage\b|chpasswd\b/.test(cmds)) q.category = "users-groups";
+      else if (/firewall-cmd\b|firewalld\b/.test(cmds)) q.category = "firewall";
+      else if (/nmcli\b|ip addr\b|ip a\b|hostnamectl\b/.test(cmds))
+        q.category = "networking";
+      else if (/setsebool\b|semanage\b|restorecon\b|getenforce\b/.test(cmds))
+        q.category = "selinux";
+    }
+
+    if (!q.category) q.category = "misc";
+  });
+}
+
+// Hide category buttons that have zero tasks assigned
+function hideEmptyCategoryButtons() {
+  // ensure categories assigned
+  assignCategoriesToPool();
+
+  const counts = {};
+  questionPool.forEach((q) => {
+    counts[q.category] = (counts[q.category] || 0) + 1;
+  });
+
+  document.querySelectorAll(".category-btn").forEach((btn) => {
+    const cat = btn.dataset.cat || null;
+    if (!cat || cat === "all") {
+      btn.style.display = "";
+      return;
+    }
+    const count = counts[cat] || 0;
+    btn.style.display = count > 0 ? "" : "none";
+  });
+}
+
+// Expose category counts for inspection and log to console
+function getCategoryCounts() {
+  assignCategoriesToPool();
+  const counts = {};
+  questionPool.forEach((q) => {
+    counts[q.category] = (counts[q.category] || 0) + 1;
+  });
+  window.categoryCounts = counts;
+  console.info("Category counts:", counts);
+  return counts;
+}
+
+// Run initial UI cleanup on load
+window.addEventListener("DOMContentLoaded", () => {
+  try {
+    // assign categories and hide any empty category buttons
+    hideEmptyCategoryButtons();
+    // load history for exam panel
+    loadHistory();
+  } catch (e) {
+    console.warn("Initialization notice:", e && e.message);
+  }
+});
+// Expand questionPool so each category has at least `minPerCategory` tasks.
+function expandQuestionPool(minPerCategory = 20) {
+  const byCat = {};
+  questionPool.forEach((q) => {
+    byCat[q.category] = byCat[q.category] || [];
+    byCat[q.category].push(q);
+  });
+
+  const usernamePool = [
+    "alice",
+    "bob",
+    "carol",
+    "dave",
+    "eve",
+    "frank",
+    "grace",
+    "heidi",
+    "ivan",
+    "judy",
+    "mallory",
+    "nancy",
+    "oscar",
+    "peggy",
+    "trent",
+    "victor",
+    "walter",
+    "xena",
+    "yvonne",
+    "zack",
+  ];
+  const randInt = (min, max) =>
+    Math.floor(Math.random() * (max - min + 1)) + min;
+
+  Object.keys(byCat).forEach((cat) => {
+    const arr = byCat[cat];
+
+    // Use only original (non-generated) bases when creating variants to avoid
+    // repeatedly cloning already-generated variants. If no originals exist,
+    // fall back to the current array.
+    let originalBases = arr.filter((q) => !q.generated);
+    if (originalBases.length === 0) originalBases = arr.slice();
+
+    const generationCount = {}; // track how many variants created per base
+    const capPerBase = 3; // don't generate more than 3 variants per original base
+
+    let idx = 0;
+    let safety = 0;
+    while (arr.length < minPerCategory && safety < 500) {
+      const base = originalBases[idx % originalBases.length];
+      const baseKey = base.desc || `base-${idx % originalBases.length}`;
+      generationCount[baseKey] = generationCount[baseKey] || 0;
+
+      // If this base already reached its cap, move to next base
+      const allCapped = originalBases.every(
+        (b) => (generationCount[b.desc] || 0) >= capPerBase
+      );
+      if (allCapped) break;
+      if (generationCount[baseKey] >= capPerBase) {
+        idx++;
+        safety++;
+        continue;
+      }
+
+      generationCount[baseKey]++;
+      const variantIndex = arr.length + 1;
+      const newQ = JSON.parse(JSON.stringify(base));
+      newQ.generated = true;
+      newQ.desc = `${base.desc} (variant ${variantIndex})`;
+
+      newQ.cmds = base.cmds.map((cmd) => {
+        let c = cmd;
+        c = c.replace(
+          /\b(alice|bob|john|harry|natasha|temp_user|developer|service_account|backup_user|fred|examuser)\b/gi,
+          () => usernamePool[randInt(0, usernamePool.length - 1)] + variantIndex
+        );
+        c = c.replace(
+          /(\b\d{1,3}\.\d{1,3}\.\d{1,3}\.)\d{1,3}\b/g,
+          (m, p1) => p1 + randInt(2, 250)
+        );
+        c = c.replace(
+          /(:|port=)(\d{2,5})/g,
+          (m, p1, p2) => p1 + randInt(2000, 65000)
+        );
+        return c;
+      });
+
+      newQ.verify = Array.isArray(base.verify) ? base.verify.slice() : [];
+
+      questionPool.push(newQ);
+      arr.push(newQ);
+      idx++;
+      safety++;
+    }
+
+    // Do NOT borrow tasks from other categories. If a category cannot reach
+    // `minPerCategory` via safe variants of its original bases we leave it as-is.
+    // This preserves topical integrity for user practice sessions.
+  });
+}
+
+// Sanitize common unsafe command patterns across questionPool
+function sanitizeCommandPatterns() {
+  questionPool.forEach((q) => {
+    if (!Array.isArray(q.cmds)) return;
+    q.cmds = q.cmds.map((cmd) => {
+      let c = cmd;
+      if (typeof c !== "string") return c;
+
+      // remove inline variant comments at end of line
+      c = c.replace(/\s*#\s*variant\b.*$/i, "").trim();
+
+      // transform echo -e "pw\npw" | passwd user  -> echo "user:pw" | chpasswd
+      const m = c.match(
+        /echo\s+-e\s+"([^"]+)"\s*\|\s*passwd\s+([A-Za-z0-9_\-]+)/i
+      );
+      if (m) {
+        const pwBlock = m[1];
+        const username = m[2];
+        // take first non-empty line as password
+        const pw =
+          pwBlock
+            .split(/\\r?\\n/)
+            .map((s) => s.trim())
+            .filter(Boolean)[0] || pwBlock;
+        return `echo "${username}:${pw}" | chpasswd`;
+      }
+
+      // transform echo "user:pw\n..." | chpasswd  -> echo "user:pw" | chpasswd
+      const mc = c.match(
+        /echo\s+['"]([\s\S]*?\n[\s\S]*?)['"]\s*\|\s*chpasswd/i
+      );
+      if (mc) {
+        const block = mc[1];
+        const firstLine =
+          block
+            .split(/\\r?\\n/)
+            .map((s) => s.trim())
+            .filter(Boolean)[0] || block;
+        return `echo "${firstLine}" | chpasswd`;
+      }
+
+      // transform echo "line" | crontab -  -> (crontab -l 2>/dev/null; echo "line") | crontab -
+      const cm = c.match(/^echo\s+"([^"]+)"\s*\|\s*crontab\s+-$/i);
+      if (cm) {
+        const line = cm[1];
+        return `(crontab -l 2>/dev/null; echo "${line}") | crontab -`;
+      }
+
+      // transform echo "line" | crontab -u user -  -> (crontab -l -u user 2>/dev/null; echo "line") | crontab -u user -
+      const cmu = c.match(
+        /^echo\s+"([^"]+)"\s*\|\s*crontab\s+-u\s+([A-Za-z0-9_\-]+)\s+-$/i
+      );
+      if (cmu) {
+        const line = cmu[1];
+        const u = cmu[2];
+        return `(crontab -l -u ${u} 2>/dev/null; echo "${line}") | crontab -u ${u} -`;
+      }
+
+      // If command contains multiple lines, flatten into a single chained one-liner,
+      // but preserve here-doc style commands (<< EOF) which must remain multiline.
+      if (c.includes("\n") && !/<<\s*[-']?EOF|<<\s*[-']?[A-Z0-9_]+/i.test(c)) {
+        const lines = c
+          .split(/\r?\n/)
+          .map((l) => l.trim())
+          .filter(Boolean);
+        // join with '&&' to preserve short-circuit semantics
+        c = lines.join(" && ");
+      }
+
+      return c;
+    });
+  });
+}
+
+// Generate canonical Red Hat standard single-line answers for each question
+function generateCanonicalAnswers() {
+  questionPool.forEach((q) => {
+    if (!Array.isArray(q.cmds)) {
+      q.canonical = [];
+      return;
+    }
+    // Prefer generating canonical answers from the human-readable description
+    // when it clearly specifies the username, password and expiration.
+    const desc = (q.desc || "").toString();
+    const createUserWithPwExp = desc.match(
+      /create user\s+'?([A-Za-z0-9_\-]+)'?\s+with password\s+'?([^'"\s]+)'?\s+(?:that\s+)?expires?\s+in\s+(\d+)\s+days?/i
+    );
+    if (createUserWithPwExp) {
+      const user = createUserWithPwExp[1];
+      const pw = createUserWithPwExp[2];
+      const days = createUserWithPwExp[3];
+      q.canonical = [
+        `useradd -m ${user}`,
+        `echo "${user}:${pw}" | chpasswd`,
+        `chage -M ${days} ${user}`,
+      ];
+      // Ensure original cmds are safe/non-interactive for automated checks
+      q.cmds = q.cmds.map((cmd) => {
+        if (typeof cmd !== "string") return cmd;
+        // replace interactive passwd with chpasswd for the target user
+        if (/^\s*passwd\s+([A-Za-z0-9_\-]+)/.test(cmd)) {
+          return `echo "${user}:${pw}" | chpasswd`;
+        }
+        return cmd;
+      });
+      return;
+    }
+
+    q.canonical = q.cmds.map((orig) => {
+      let c = String(orig);
+
+      // if here-doc present, keep as-is
+      if (/<<\s*[-']?EOF|<<\s*[-']?[A-Z0-9_]+/i.test(c)) return c;
+
+      // remove trailing comments
+      c = c.replace(/\s*#.*$/, "").trim();
+
+      // Replace interactive passwd username (without flags) with chpasswd using default 'redhat'
+      // Match lines like: passwd username  or passwd username || true
+      const passwdMatch = c.match(
+        /^\s*passwd\s+([A-Za-z0-9_\-]+)(\s*\|\|.*)?$/
+      );
+      if (passwdMatch) {
+        const user = passwdMatch[1];
+        const nc = `echo "${user}:redhat" | chpasswd`;
+        // also update the original cmds entry to be safe
+        return nc;
+      }
+
+      // If pattern is echo -e 'pw\npw' | passwd user already sanitized earlier, leave
+      if (/\|\s*chpasswd/.test(c)) return c;
+
+      // Flatten any remaining newlines into && chain
+      if (c.includes("\n")) {
+        c = c
+          .split(/\r?\n/)
+          .map((s) => s.trim())
+          .filter(Boolean)
+          .join(" && ");
+      }
+
+      return c;
+    });
+
+    // Also mutate original cmds where interactive passwd lines existed to chpasswd
+    q.cmds = q.cmds.map((cmd) => {
+      if (typeof cmd !== "string") return cmd;
+      if (/^\s*passwd\s+[A-Za-z0-9_\-]+(\s*\|\|.*)?$/.test(cmd)) {
+        const user = cmd.match(/^\s*passwd\s+([A-Za-z0-9_\-]+)/)[1];
+        return `echo "${user}:redhat" | chpasswd`;
+      }
+      return cmd;
+    });
+  });
+}
 
 // Load history from localStorage
 function loadHistory() {
@@ -148,9 +560,9 @@ const questionPool = [
       "useradd -G sharegrp harry",
       "useradd -G sharegrp natasha",
       "useradd -s /sbin/nologin copper",
-      'echo -e "redhat\nredhat" | passwd harry',
-      'echo -e "redhat\nredhat" | passwd natasha',
-      'echo -e "redhat\nredhat" | passwd copper',
+      'echo "harry:redhat" | chpasswd',
+      'echo "natasha:redhat" | chpasswd',
+      'echo "copper:redhat" | chpasswd',
     ],
     verify: ["getent group sharegrp", "id harry", "id natasha"],
     hint: "Use groupadd, useradd -G for secondary groups and useradd -s /sbin/nologin for no shell",
@@ -185,10 +597,7 @@ const questionPool = [
   {
     desc: "[servera] Create user fred with UID 3945 and password iamredhatman",
     points: 8,
-    cmds: [
-      "useradd -u 3945 fred",
-      'echo -e "iamredhatman\niamredhatman" | passwd fred',
-    ],
+    cmds: ["useradd -u 3945 fred", 'echo "fred:iamredhatman" | chpasswd'],
     verify: ["getent passwd fred"],
     hint: "useradd -u UID username and passwd to set password",
   },
@@ -438,7 +847,10 @@ const questionPool = [
   {
     desc: "Create user 'examuser' with skeleton files from /etc/skel and ensure home exists",
     points: 6,
-    cmds: ["useradd -m -k /etc/skel examuser", "passwd examuser || true"],
+    cmds: [
+      "useradd -m -k /etc/skel examuser",
+      'echo "examuser:redhat" | chpasswd',
+    ],
     verify: ["getent passwd examuser", "ls -la /home/examuser"],
     hint: "useradd -m creates home and -k specify skeleton dir",
   },
@@ -457,7 +869,7 @@ const questionPool = [
     cmds: [
       "groupadd developers",
       "useradd -u 2500 -g developers -s /bin/bash john",
-      "passwd john",
+      'echo "john:redhat" | chpasswd',
     ],
     verify: ["id john"],
     hint: "groupadd, useradd -u UID -g GROUP -s SHELL",
@@ -1965,12 +2377,49 @@ const questionPool = [
 
 function selectRandomTasks() {
   const selected = [];
-  const poolCopy = [...questionPool];
+  // Ensure categories assigned
+  assignCategoriesToPool();
 
-  // Shuffle and select 20 unique tasks
-  while (selected.length < 20 && poolCopy.length > 0) {
-    const randomIndex = Math.floor(Math.random() * poolCopy.length);
-    selected.push(poolCopy.splice(randomIndex, 1)[0]);
+  // ensure enough tasks per category
+  expandQuestionPool(20);
+
+  // sanitize any unsafe command patterns (passwd piping, inline variant comments, crontab overwrites)
+  sanitizeCommandPatterns();
+
+  // generate canonical, Red Hat standard one-line answers for each question
+  generateCanonicalAnswers();
+
+  // Filter pool by category if selected
+  const poolCopy =
+    selectedCategory === "all"
+      ? [...questionPool]
+      : questionPool.filter((q) => q.category === selectedCategory);
+
+  // Decide number of tasks: always 20 (full exam or specific topic practice should use 20)
+  const numTarget = 20;
+
+  // Shuffle and select unique tasks up to numTarget while avoiding duplicate questions
+  // Normalize descriptions by stripping variant markers so variants of the same
+  // base task are treated as the same question for a single-session dedupe.
+  const shuffled = poolCopy.slice().sort(() => Math.random() - 0.5);
+  const seen = new Set();
+  for (let i = 0; i < shuffled.length && selected.length < numTarget; i++) {
+    const q = shuffled[i];
+    const rawDesc = (q.desc || "").trim();
+    // remove '(variant ...)' and '(cross-cat variant ...)' markers
+    const normalizedDesc = rawDesc
+      .replace(/\s*\((?:variant|cross-cat variant)[^)]+\)/gi, "")
+      .trim();
+    const canonicalKey =
+      Array.isArray(q.canonical) && q.canonical[0]
+        ? q.canonical[0]
+        : Array.isArray(q.cmds)
+        ? q.cmds.join("||")
+        : "";
+    const key = `${normalizedDesc}||${canonicalKey}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    selected.push(q);
   }
 
   // Assign IDs and structure
@@ -2432,3 +2881,4 @@ window.addEventListener("beforeunload", (e) => {
 });
 
 loadHistory();
+assignCategoriesToPool();

@@ -61,6 +61,11 @@ body {
     border: 2px solid #e2e8f0;
 }
 
+padding: 12px 20px;
+/* normal padding; removed extra top gap */
+padding: 18px 20px 12px 20px;
+
+/* larger top padding so first line has vertical gap */
 .timer-display.warning {
     color: #ed8936;
     border-color: #ed8936;
@@ -127,6 +132,38 @@ body {
 .btn-warning {
     background: #ed8936;
     color: white;
+}
+
+/* Category filter (pill buttons) */
+.category-filter {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 8px 0;
+}
+
+.category-btn {
+    padding: 8px 12px;
+    border: 2px solid #667eea;
+    background: white;
+    color: #667eea;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    transition: all 0.18s ease;
+}
+
+.category-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(102, 126, 234, 0.12);
+}
+
+.category-btn.active {
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    color: white;
+    border-color: transparent;
 }
 
 .content-grid {
@@ -213,7 +250,7 @@ body {
 
 .solution-textarea {
     width: 100%;
-    min-height: 80px;
+    min-height: 140px;
     padding: 12px;
     border: 2px solid #e2e8f0;
     border-radius: 8px;
@@ -221,6 +258,25 @@ body {
     font-size: 14px;
     resize: vertical;
     margin-bottom: 10px;
+}
+
+/* Welcome screen actions (Start / Reset) */
+.welcome-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.welcome-actions .start-btn {
+    font-size: 20px;
+    padding: 15px 40px;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.18);
+}
+
+.welcome-actions .reset-btn {
+    font-size: 16px;
+    padding: 12px 30px;
 }
 
 .solution-textarea:focus {
@@ -531,11 +587,15 @@ body {
 
 .answer-box {
     background: #eef2ff;
-    padding: 12px;
+    position: relative;
+    /* negate .task-card padding so content starts at card edge */
+    width: 100%;
+    padding: 12px 20px;
+    /* internal padding for readability */
     border-radius: 6px;
     margin-top: 10px;
     font-size: 13px;
-    border-left: 3px solid #667eea;
+    border-left: none;
     display: none;
     font-family: "Courier New", monospace;
     white-space: pre-wrap;
@@ -543,6 +603,11 @@ body {
 
 .answer-box.visible {
     display: block;
+}
+
+/* Left-align shown canonical answers (user requested) */
+.answer-box {
+    text-align: left;
 }
 
 .hint-toggle {
