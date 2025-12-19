@@ -8,33 +8,80 @@ let selectedCategory = "all";
 
 function setPracticeCategory(cat, btn) {
   selectedCategory = cat;
-  document.querySelectorAll(".category-btn").forEach((b) => b.classList.remove("active"));
+  document
+    .querySelectorAll(".category-btn")
+    .forEach((b) => b.classList.remove("active"));
   if (btn && btn.classList) btn.classList.add("active");
 }
 
 // Assign lightweight categories based on keywords
 function assignCategoriesToPool() {
   const patterns = [
-    ["system-access", /\b(login|su\b|sudo\b|root password|grub|boot|rd\.break|boot process)\b/i],
-    ["files-directories", /\b(cp\b|mv\b|rm\b|mkdir\b|rmdir\b|link\b|umask\b|chown\b|chgrp\b|permission|chmod|tar|gzip|bzip|archive|compress|find|grep|sed)\b/i],
-    ["users-groups", /\b(useradd\b|usermod\b|userdel\b|groupadd\b|groupdel\b|chage\b|passwd\b|chpasswd\b|id\b|getent\b|umask\b|login.defs)\b/i],
+    [
+      "system-access",
+      /\b(login|su\b|sudo\b|root password|grub|boot|rd\.break|boot process)\b/i,
+    ],
+    [
+      "files-directories",
+      /\b(cp\b|mv\b|rm\b|mkdir\b|rmdir\b|link\b|umask\b|chown\b|chgrp\b|permission|chmod|tar|gzip|bzip|archive|compress|find|grep|sed)\b/i,
+    ],
+    [
+      "users-groups",
+      /\b(useradd\b|usermod\b|userdel\b|groupadd\b|groupdel\b|chage\b|passwd\b|chpasswd\b|id\b|getent\b|umask\b|login.defs)\b/i,
+    ],
     ["acl", /\b(getfacl\b|setfacl\b|\bacl\b|default acl)\b/i],
-    ["selinux", /\b(selinux|semanage\b|restorecon\b|getenforce\b|sestatus\b|setsebool\b|chcon\b|ls -Z)\b/i],
-    ["networking", /\b(nmcli\b|hostnamectl\b|ipv4\b|gateway\b|dns\b|ip a\b|ss\b|ping\b|ip addr\b|route\b|mtu\b|mac\b|resolv.conf)\b/i],
+    [
+      "selinux",
+      /\b(selinux|semanage\b|restorecon\b|getenforce\b|sestatus\b|setsebool\b|chcon\b|ls -Z)\b/i,
+    ],
+    [
+      "networking",
+      /\b(nmcli\b|hostnamectl\b|ipv4\b|gateway\b|dns\b|ip a\b|ss\b|ping\b|ip addr\b|route\b|mtu\b|mac\b|resolv.conf)\b/i,
+    ],
     ["firewall", /\b(firewall-cmd\b|firewall\b|rich rule|zones|ports)\b/i],
-    ["software-management", /\b(dnf\b|repo\b|yum\b|rpm\b|package\b|repolist\b|install\b|remove\b|update)\b/i],
-    ["processes-services", /\b(ps\b|top\b|kill\b|pkill\b|nice\b|renice\b|systemctl\b|service\b|targets\b|enable\b|disable\b|start\b|stop\b|restart\b|mask\b)\b/i],
-    ["storage-basic", /\b(pvcreate\b|vgcreate\b|lvcreate\b|lvextend\b|lvreduce\b|mkfs\b|lsblk\b|blkid\b|fstab\b|mount\b|umount\b|df\b|du\b|swap\b|mkswap\b|swapon)\b/i],
-    ["lvm", /\b(lvm\b|lvcreate\b|vg\b|pv\b|lvextend\b|lvresize\b|lvreduce\b|lvremove\b|vgremove\b|pvs\b|vgs\b|lvs\b)\b/i],
+    [
+      "software-management",
+      /\b(dnf\b|repo\b|yum\b|rpm\b|package\b|repolist\b|install\b|remove\b|update)\b/i,
+    ],
+    [
+      "processes-services",
+      /\b(ps\b|top\b|kill\b|pkill\b|nice\b|renice\b|systemctl\b|service\b|targets\b|enable\b|disable\b|start\b|stop\b|restart\b|mask\b)\b/i,
+    ],
+    [
+      "storage-basic",
+      /\b(pvcreate\b|vgcreate\b|lvcreate\b|lvextend\b|lvreduce\b|mkfs\b|lsblk\b|blkid\b|fstab\b|mount\b|umount\b|df\b|du\b|swap\b|mkswap\b|swapon)\b/i,
+    ],
+    [
+      "lvm",
+      /\b(lvm\b|lvcreate\b|vg\b|pv\b|lvextend\b|lvresize\b|lvreduce\b|lvremove\b|vgremove\b|pvs\b|vgs\b|lvs\b)\b/i,
+    ],
     ["swap", /\b(swap\b|mkswap\b|swapon\b|swapfile|swapoff)\b/i],
-    ["boot-kernel", /\b(boot\b|kernel\b|rescue\b|emergency\b|grub2\b|rd\.break)\b/i],
-    ["archive-compression", /\b(tar\b|gzip\b|bzip2\b|xz\b|archive\b|compress\b|extract\b)\b/i],
+    [
+      "boot-kernel",
+      /\b(boot\b|kernel\b|rescue\b|emergency\b|grub2\b|rd\.break)\b/i,
+    ],
+    [
+      "archive-compression",
+      /\b(tar\b|gzip\b|bzip2\b|xz\b|archive\b|compress\b|extract\b)\b/i,
+    ],
     ["searching-text", /\b(grep\b|find\b|sort\b|cut\b|awk\b|wc\b|sed\b)\b/i],
-    ["bash-shell", /\b(shell\b|bash\b|aliases\b|redirection\b|pipes\b|history\b|2>\b|>>\b)\b/i],
+    [
+      "bash-shell",
+      /\b(shell\b|bash\b|aliases\b|redirection\b|pipes\b|history\b|2>\b|>>\b)\b/i,
+    ],
     ["scheduling", /\b(cron\b|at\b|anacron\b|timer\b|crontab\b)\b/i],
-    ["logging-time", /\b(journalctl\b|rsyslog\b|timedatectl\b|timezone\b|persistent logs|chrony\b|ntp\b)\b/i],
-    ["containers-podman", /\b(podman\b|container\b|images\b|volumes\b|pull\b|run\b|ps\b|stop\b|rm\b|rmi\b)\b/i],
-    ["exam-environment", /\b(man pages|tab completion|tmux\b|no internet|time management|audit\b|verify\b|validate\b)\b/i],
+    [
+      "logging-time",
+      /\b(journalctl\b|rsyslog\b|timedatectl\b|timezone\b|persistent logs|chrony\b|ntp\b)\b/i,
+    ],
+    [
+      "containers-podman",
+      /\b(podman\b|container\b|images\b|volumes\b|pull\b|run\b|ps\b|stop\b|rm\b|rmi\b)\b/i,
+    ],
+    [
+      "exam-environment",
+      /\b(man pages|tab completion|tmux\b|no internet|time management|audit\b|verify\b|validate\b)\b/i,
+    ],
   ];
 
   questionPool.forEach((q) => {
@@ -99,24 +146,30 @@ function sanitizeCommandPatterns() {
 
       c = c.replace(/\s*#\s*variant\b.*$/i, "").trim();
 
-      const m = c.match(/echo\s+-e\s+"([^"]+)"\s*\|\s*passwd\s+([A-Za-z0-9_\-]+)/i);
+      const m = c.match(
+        /echo\s+-e\s+"([^"]+)"\s*\|\s*passwd\s+([A-Za-z0-9_\-]+)/i
+      );
       if (m) {
         const pwBlock = m[1];
         const username = m[2];
-        const pw = pwBlock
-          .split(/\\r?\\n/)
-          .map((s) => s.trim())
-          .filter(Boolean)[0] || pwBlock;
+        const pw =
+          pwBlock
+            .split(/\\r?\\n/)
+            .map((s) => s.trim())
+            .filter(Boolean)[0] || pwBlock;
         return `echo "${username}:${pw}" | chpasswd`;
       }
 
-      const mc = c.match(/echo\s+['"]([\s\S]*?\n[\s\S]*?)['"]\s*\|\s*chpasswd/i);
+      const mc = c.match(
+        /echo\s+['"]([\s\S]*?\n[\s\S]*?)['"]\s*\|\s*chpasswd/i
+      );
       if (mc) {
         const block = mc[1];
-        const firstLine = block
-          .split(/\\r?\\n/)
-          .map((s) => s.trim())
-          .filter(Boolean)[0] || block;
+        const firstLine =
+          block
+            .split(/\\r?\\n/)
+            .map((s) => s.trim())
+            .filter(Boolean)[0] || block;
         return `echo "${firstLine}" | chpasswd`;
       }
 
@@ -126,7 +179,9 @@ function sanitizeCommandPatterns() {
         return `(crontab -l 2>/dev/null; echo "${line}") | crontab -`;
       }
 
-      const cmu = c.match(/^echo\s+"([^"]+)"\s*\|\s*crontab\s+-u\s+([A-Za-z0-9_\-]+)\s+-$/i);
+      const cmu = c.match(
+        /^echo\s+"([^"]+)"\s*\|\s*crontab\s+-u\s+([A-Za-z0-9_\-]+)\s+-$/i
+      );
       if (cmu) {
         const line = cmu[1];
         const u = cmu[2];
@@ -161,7 +216,9 @@ function generateCanonicalAnswers() {
 
       c = c.replace(/\s*#.*$/, "").trim();
 
-      const passwdMatch = c.match(/^\s*passwd\s+([A-Za-z0-9_\-]+)(\s*\|\|.*)?$/);
+      const passwdMatch = c.match(
+        /^\s*passwd\s+([A-Za-z0-9_\-]+)(\s*\|\|.*)?$/
+      );
       if (passwdMatch) {
         const user = passwdMatch[1];
         return `echo "${user}:redhat" | chpasswd`;
@@ -247,7 +304,9 @@ function displayHistory() {
 
   const totalAttempts = examHistory.length;
   const highestScore = Math.max(...examHistory.map((e) => e.score));
-  const avgScore = Math.round(examHistory.reduce((sum, e) => sum + e.score, 0) / totalAttempts);
+  const avgScore = Math.round(
+    examHistory.reduce((sum, e) => sum + e.score, 0) / totalAttempts
+  );
   const passCount = examHistory.filter((e) => e.score >= 210).length;
   const passRate = Math.round((passCount / totalAttempts) * 100);
 
@@ -282,7 +341,9 @@ function toggleHint(id, btn) {
   if (!el) return;
   el.classList.toggle("visible");
   if (btn)
-    btn.textContent = el.classList.contains("visible") ? "Hide Hint" : "Show Hint";
+    btn.textContent = el.classList.contains("visible")
+      ? "Hide Hint"
+      : "Show Hint";
 }
 
 function toggleAnswer(id, btn) {
@@ -290,7 +351,9 @@ function toggleAnswer(id, btn) {
   if (!el) return;
   el.classList.toggle("visible");
   if (btn)
-    btn.textContent = el.classList.contains("visible") ? "Hide Answer" : "Show Answer";
+    btn.textContent = el.classList.contains("visible")
+      ? "Hide Answer"
+      : "Show Answer";
 }
 
 // ONLY EX200 QUESTION POOL (200 questions)
@@ -1799,9 +1862,10 @@ function selectRandomTasks() {
   sanitizeCommandPatterns();
   generateCanonicalAnswers();
 
-  const poolCopy = selectedCategory === "all"
-    ? [...questionPool]
-    : questionPool.filter((q) => q.category === selectedCategory);
+  const poolCopy =
+    selectedCategory === "all"
+      ? [...questionPool]
+      : questionPool.filter((q) => q.category === selectedCategory);
 
   const numTarget = 20;
   const shuffled = poolCopy.slice().sort(() => Math.random() - 0.5);
@@ -1813,11 +1877,12 @@ function selectRandomTasks() {
     const normalizedDesc = rawDesc
       .replace(/\s*\((?:variant|cross-cat variant)[^)]+\)/gi, "")
       .trim();
-    const canonicalKey = Array.isArray(q.canonical) && q.canonical[0]
-      ? q.canonical[0]
-      : Array.isArray(q.cmds)
-      ? q.cmds.join("||")
-      : "";
+    const canonicalKey =
+      Array.isArray(q.canonical) && q.canonical[0]
+        ? q.canonical[0]
+        : Array.isArray(q.cmds)
+        ? q.cmds.join("||")
+        : "";
     const key = `${normalizedDesc}||${canonicalKey}`;
     if (seen.has(key)) continue;
     seen.add(key);
@@ -1845,7 +1910,9 @@ function startExam() {
 
   document.getElementById("welcomeScreen").classList.add("hidden");
   document.getElementById("examInterface").classList.remove("hidden");
-  document.getElementById("examNumber").textContent = `Exam #${currentExamNumber}`;
+  document.getElementById(
+    "examNumber"
+  ).textContent = `Exam #${currentExamNumber}`;
 
   renderTasks();
   startTimer();
@@ -1856,7 +1923,9 @@ function renderTasks() {
   taskList.innerHTML = tasks
     .map(
       (task) => `
-        <div class="task-card ${task.submitted ? "submitted" : ""}" id="task-${task.id}">
+        <div class="task-card ${task.submitted ? "submitted" : ""}" id="task-${
+        task.id
+      }">
           <div class="task-number">Task ${task.id}</div>
           <div class="task-description">${task.description}</div>
           <div class="task-points">Points: ${task.points}</div>
@@ -1877,10 +1946,16 @@ function renderTasks() {
               ${task.submitted ? "✓ Submitted" : "📤 Submit Solution"}
             </button>
 
-            <button class="hint-toggle" onclick="toggleHint(${task.id}, this)" style="margin-left:10px;">Show Hint</button>
-            <button class="hint-toggle" onclick="toggleAnswer(${task.id}, this)" style="margin-left:8px;">Show Answer</button>
+            <button class="hint-toggle" onclick="toggleHint(${
+              task.id
+            }, this)" style="margin-left:10px;">Show Hint</button>
+            <button class="hint-toggle" onclick="toggleAnswer(${
+              task.id
+            }, this)" style="margin-left:8px;">Show Answer</button>
             
-            <div class="solution-status ${task.status || ""}" id="status-${task.id}">
+            <div class="solution-status ${task.status || ""}" id="status-${
+        task.id
+      }">
               ${task.statusMessage || ""}
             </div>
           </div>
@@ -1924,7 +1999,9 @@ function checkSolution(task, solution) {
     .split("\n")
     .map((line) => line.trim())
     .filter((line) => line);
-  const expectedCommands = task.expectedCommands.map((cmd) => cmd.toLowerCase());
+  const expectedCommands = task.expectedCommands.map((cmd) =>
+    cmd.toLowerCase()
+  );
 
   let matchedCommands = 0;
   let totalRequired = expectedCommands.length;
@@ -1990,11 +2067,16 @@ function updateTimerDisplay() {
   const minutes = Math.floor((timeRemaining % 3600) / 60);
   const seconds = timeRemaining % 60;
 
-  const display = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  const display = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+    2,
+    "0"
+  )}:${String(seconds).padStart(2, "0")}`;
   const timerEl = document.getElementById("timerDisplay");
   timerEl.textContent = display;
 
-  document.getElementById("timeRemaining").textContent = `${Math.floor(timeRemaining / 60)} min`;
+  document.getElementById("timeRemaining").textContent = `${Math.floor(
+    timeRemaining / 60
+  )} min`;
 
   if (timeRemaining <= 900) {
     timerEl.className = "timer-display critical";
@@ -2011,11 +2093,19 @@ function submitExam() {
   const unanswered = tasks.filter((t) => !t.submitted).length;
 
   if (unanswered > 0) {
-    if (!confirm(`⚠️ Warning: ${unanswered} task(s) not submitted!\n\nUnanswered tasks will score 0 points.\n\nSubmit exam anyway?`)) {
+    if (
+      !confirm(
+        `⚠️ Warning: ${unanswered} task(s) not submitted!\n\nUnanswered tasks will score 0 points.\n\nSubmit exam anyway?`
+      )
+    ) {
       return;
     }
   } else {
-    if (!confirm("📤 Submit exam for grading?\n\nYou cannot change answers after submission.")) {
+    if (
+      !confirm(
+        "📤 Submit exam for grading?\n\nYou cannot change answers after submission."
+      )
+    ) {
       return;
     }
   }
@@ -2052,15 +2142,21 @@ function showResults() {
   const passed = totalScore >= 210;
 
   document.getElementById("finalScore").textContent = `${totalScore}/300`;
-  document.getElementById("finalScore").style.color = passed ? "#059669" : "#dc2626";
+  document.getElementById("finalScore").style.color = passed
+    ? "#059669"
+    : "#dc2626";
 
   const passBadge = document.getElementById("passBadge");
   if (passed) {
     passBadge.className = "pass-badge passed";
-    passBadge.innerHTML = `🎉 PASSED! You scored ${Math.round((totalScore / 300) * 100)}%`;
+    passBadge.innerHTML = `🎉 PASSED! You scored ${Math.round(
+      (totalScore / 300) * 100
+    )}%`;
   } else {
     passBadge.className = "pass-badge failed";
-    passBadge.innerHTML = `❌ FAILED. You need 210+ to pass (${Math.round((totalScore / 300) * 100)}%)`;
+    passBadge.innerHTML = `❌ FAILED. You need 210+ to pass (${Math.round(
+      (totalScore / 300) * 100
+    )}%)`;
   }
 
   const breakdown = document.getElementById("resultBreakdown");
@@ -2089,8 +2185,14 @@ function showResults() {
       return `
         <div class="result-item ${itemClass}">
           <div>
-            <strong>${icon} Task ${task.id}:</strong> ${task.description.substring(0, 60)}...
-            ${!task.submitted ? '<br><small style="color: #6b7280;">Not answered</small>' : ""}
+            <strong>${icon} Task ${
+        task.id
+      }:</strong> ${task.description.substring(0, 60)}...
+            ${
+              !task.submitted
+                ? '<br><small style="color: #6b7280;">Not answered</small>'
+                : ""
+            }
           </div>
           <div style="font-weight: bold; font-size: 18px;">
             ${scoreText}
@@ -2116,13 +2218,18 @@ function showResults() {
       </div>
       <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #e2e8f0;">
         <div style="font-size: 16px; color: #2d3748;">
-          <strong>Time Used:</strong> ${Math.floor((9000 - timeRemaining) / 60)} minutes
+          <strong>Time Used:</strong> ${Math.floor(
+            (9000 - timeRemaining) / 60
+          )} minutes
         </div>
         <div style="font-size: 14px; color: #718096; margin-top: 5px;">
           Average: ${(() => {
             const submittedCount = tasks.filter((t) => t.submitted).length;
             if (!submittedCount) return "N/A";
-            return ((9000 - timeRemaining) / 60 / submittedCount).toFixed(1) + " min/task";
+            return (
+              ((9000 - timeRemaining) / 60 / submittedCount).toFixed(1) +
+              " min/task"
+            );
           })()}
         </div>
       </div>
@@ -2167,7 +2274,9 @@ function downloadResults() {
   let report = `RHCSA EX200 Exam Results - Exam #${currentExamNumber - 1}\n`;
   report += `=================================================\n\n`;
   report += `Date: ${new Date().toLocaleString()}\n`;
-  report += `Final Score: ${totalScore}/300 (${Math.round((totalScore / 300) * 100)}%)\n`;
+  report += `Final Score: ${totalScore}/300 (${Math.round(
+    (totalScore / 300) * 100
+  )}%)\n`;
   report += `Result: ${passed ? "PASSED ✓" : "FAILED ✗"}\n`;
   report += `Passing Score: 210/300 (70%)\n`;
   report += `Time Used: ${timeUsed} minutes\n\n`;
@@ -2183,7 +2292,9 @@ function downloadResults() {
       ? "PARTIAL"
       : "INCORRECT";
 
-    report += `Task ${task.id}: ${status} - ${task.score || 0}/${task.points} points\n`;
+    report += `Task ${task.id}: ${status} - ${task.score || 0}/${
+      task.points
+    } points\n`;
     report += `Description: ${task.description}\n`;
     if (task.solution) {
       report += `Your Solution:\n${task.solution}\n`;
@@ -2207,7 +2318,9 @@ function downloadResults() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `RHCSA_Exam_${currentExamNumber - 1}_${new Date().toISOString().split("T")[0]}.txt`;
+  a.download = `RHCSA_Exam_${currentExamNumber - 1}_${
+    new Date().toISOString().split("T")[0]
+  }.txt`;
   a.click();
   URL.revokeObjectURL(url);
 }
