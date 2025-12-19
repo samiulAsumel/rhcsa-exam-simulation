@@ -55,17 +55,12 @@ body {
     font-weight: bold;
     color: #2d3748;
     font-family: "Courier New", monospace;
-    padding: 10px 20px;
+    padding: 12px 20px;
     background: #f7fafc;
     border-radius: 8px;
     border: 2px solid #e2e8f0;
 }
 
-padding: 12px 20px;
-/* normal padding; removed extra top gap */
-padding: 18px 20px 12px 20px;
-
-/* larger top padding so first line has vertical gap */
 .timer-display.warning {
     color: #ed8936;
     border-color: #ed8936;
@@ -79,15 +74,8 @@ padding: 18px 20px 12px 20px;
 }
 
 @keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.6;
-    }
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
 }
 
 .btn {
@@ -416,7 +404,6 @@ padding: 18px 20px 12px 20px;
         transform: translateY(-50px);
         opacity: 0;
     }
-
     to {
         transform: translateY(0);
         opacity: 1;
@@ -587,27 +574,19 @@ padding: 18px 20px 12px 20px;
 
 .answer-box {
     background: #eef2ff;
-    position: relative;
-    /* negate .task-card padding so content starts at card edge */
-    width: 100%;
-    padding: 12px 20px;
-    /* internal padding for readability */
+    padding: 12px;
     border-radius: 6px;
     margin-top: 10px;
     font-size: 13px;
-    border-left: none;
+    border-left: 3px solid #667eea;
     display: none;
     font-family: "Courier New", monospace;
     white-space: pre-wrap;
+    text-align: left;
 }
 
 .answer-box.visible {
     display: block;
-}
-
-/* Left-align shown canonical answers (user requested) */
-.answer-box {
-    text-align: left;
 }
 
 .hint-toggle {
@@ -620,6 +599,7 @@ padding: 18px 20px 12px 20px;
     font-size: 12px;
     font-weight: 600;
     margin-top: 10px;
+    margin-left: 8px;
 }
 
 .hint-toggle:hover {
