@@ -8,80 +8,33 @@ let selectedCategory = "all";
 
 function setPracticeCategory(cat, btn) {
   selectedCategory = cat;
-  document
-    .querySelectorAll(".category-btn")
-    .forEach((b) => b.classList.remove("active"));
+  document.querySelectorAll(".category-btn").forEach((b) => b.classList.remove("active"));
   if (btn && btn.classList) btn.classList.add("active");
 }
 
 // Assign lightweight categories based on keywords
 function assignCategoriesToPool() {
   const patterns = [
-    [
-      "system-access",
-      /\b(login|su\b|sudo\b|root password|grub|boot|rd\.break|boot process)\b/i,
-    ],
-    [
-      "files-directories",
-      /\b(cp\b|mv\b|rm\b|mkdir\b|rmdir\b|link\b|umask\b|chown\b|chgrp\b|permission|chmod|tar|gzip|bzip|archive|compress|find|grep|sed)\b/i,
-    ],
-    [
-      "users-groups",
-      /\b(useradd\b|usermod\b|userdel\b|groupadd\b|groupdel\b|chage\b|passwd\b|chpasswd\b|id\b|getent\b|umask\b|login.defs)\b/i,
-    ],
+    ["system-access", /\b(login|su\b|sudo\b|root password|grub|boot|rd\.break|boot process)\b/i],
+    ["files-directories", /\b(cp\b|mv\b|rm\b|mkdir\b|rmdir\b|link\b|umask\b|chown\b|chgrp\b|permission|chmod|tar|gzip|bzip|archive|compress|find|grep|sed)\b/i],
+    ["users-groups", /\b(useradd\b|usermod\b|userdel\b|groupadd\b|groupdel\b|chage\b|passwd\b|chpasswd\b|id\b|getent\b|umask\b|login.defs)\b/i],
     ["acl", /\b(getfacl\b|setfacl\b|\bacl\b|default acl)\b/i],
-    [
-      "selinux",
-      /\b(selinux|semanage\b|restorecon\b|getenforce\b|sestatus\b|setsebool\b|chcon\b|ls -Z)\b/i,
-    ],
-    [
-      "networking",
-      /\b(nmcli\b|hostnamectl\b|ipv4\b|gateway\b|dns\b|ip a\b|ss\b|ping\b|ip addr\b|route\b|mtu\b|mac\b|resolv.conf)\b/i,
-    ],
+    ["selinux", /\b(selinux|semanage\b|restorecon\b|getenforce\b|sestatus\b|setsebool\b|chcon\b|ls -Z)\b/i],
+    ["networking", /\b(nmcli\b|hostnamectl\b|ipv4\b|gateway\b|dns\b|ip a\b|ss\b|ping\b|ip addr\b|route\b|mtu\b|mac\b|resolv.conf)\b/i],
     ["firewall", /\b(firewall-cmd\b|firewall\b|rich rule|zones|ports)\b/i],
-    [
-      "software-management",
-      /\b(dnf\b|repo\b|yum\b|rpm\b|package\b|repolist\b|install\b|remove\b|update)\b/i,
-    ],
-    [
-      "processes-services",
-      /\b(ps\b|top\b|kill\b|pkill\b|nice\b|renice\b|systemctl\b|service\b|targets\b|enable\b|disable\b|start\b|stop\b|restart\b|mask\b)\b/i,
-    ],
-    [
-      "storage-basic",
-      /\b(pvcreate\b|vgcreate\b|lvcreate\b|lvextend\b|lvreduce\b|mkfs\b|lsblk\b|blkid\b|fstab\b|mount\b|umount\b|df\b|du\b|swap\b|mkswap\b|swapon)\b/i,
-    ],
-    [
-      "lvm",
-      /\b(lvm\b|lvcreate\b|vg\b|pv\b|lvextend\b|lvresize\b|lvreduce\b|lvremove\b|vgremove\b|pvs\b|vgs\b|lvs\b)\b/i,
-    ],
+    ["software-management", /\b(dnf\b|repo\b|yum\b|rpm\b|package\b|repolist\b|install\b|remove\b|update)\b/i],
+    ["processes-services", /\b(ps\b|top\b|kill\b|pkill\b|nice\b|renice\b|systemctl\b|service\b|targets\b|enable\b|disable\b|start\b|stop\b|restart\b|mask\b)\b/i],
+    ["storage-basic", /\b(pvcreate\b|vgcreate\b|lvcreate\b|lvextend\b|lvreduce\b|mkfs\b|lsblk\b|blkid\b|fstab\b|mount\b|umount\b|df\b|du\b|swap\b|mkswap\b|swapon)\b/i],
+    ["lvm", /\b(lvm\b|lvcreate\b|vg\b|pv\b|lvextend\b|lvresize\b|lvreduce\b|lvremove\b|vgremove\b|pvs\b|vgs\b|lvs\b)\b/i],
     ["swap", /\b(swap\b|mkswap\b|swapon\b|swapfile|swapoff)\b/i],
-    [
-      "boot-kernel",
-      /\b(boot\b|kernel\b|rescue\b|emergency\b|grub2\b|rd\.break)\b/i,
-    ],
-    [
-      "archive-compression",
-      /\b(tar\b|gzip\b|bzip2\b|xz\b|archive\b|compress\b|extract\b)\b/i,
-    ],
+    ["boot-kernel", /\b(boot\b|kernel\b|rescue\b|emergency\b|grub2\b|rd\.break)\b/i],
+    ["archive-compression", /\b(tar\b|gzip\b|bzip2\b|xz\b|archive\b|compress\b|extract\b)\b/i],
     ["searching-text", /\b(grep\b|find\b|sort\b|cut\b|awk\b|wc\b|sed\b)\b/i],
-    [
-      "bash-shell",
-      /\b(shell\b|bash\b|aliases\b|redirection\b|pipes\b|history\b|2>\b|>>\b)\b/i,
-    ],
+    ["bash-shell", /\b(shell\b|bash\b|aliases\b|redirection\b|pipes\b|history\b|2>\b|>>\b)\b/i],
     ["scheduling", /\b(cron\b|at\b|anacron\b|timer\b|crontab\b)\b/i],
-    [
-      "logging-time",
-      /\b(journalctl\b|rsyslog\b|timedatectl\b|timezone\b|persistent logs|chrony\b|ntp\b)\b/i,
-    ],
-    [
-      "containers-podman",
-      /\b(podman\b|container\b|images\b|volumes\b|pull\b|run\b|ps\b|stop\b|rm\b|rmi\b)\b/i,
-    ],
-    [
-      "exam-environment",
-      /\b(man pages|tab completion|tmux\b|no internet|time management|audit\b|verify\b|validate\b)\b/i,
-    ],
+    ["logging-time", /\b(journalctl\b|rsyslog\b|timedatectl\b|timezone\b|persistent logs|chrony\b|ntp\b)\b/i],
+    ["containers-podman", /\b(podman\b|container\b|images\b|volumes\b|pull\b|run\b|ps\b|stop\b|rm\b|rmi\b)\b/i],
+    ["exam-environment", /\b(man pages|tab completion|tmux\b|no internet|time management|audit\b|verify\b|validate\b)\b/i],
   ];
 
   questionPool.forEach((q) => {
@@ -146,30 +99,24 @@ function sanitizeCommandPatterns() {
 
       c = c.replace(/\s*#\s*variant\b.*$/i, "").trim();
 
-      const m = c.match(
-        /echo\s+-e\s+"([^"]+)"\s*\|\s*passwd\s+([A-Za-z0-9_\-]+)/i
-      );
+      const m = c.match(/echo\s+-e\s+"([^"]+)"\s*\|\s*passwd\s+([A-Za-z0-9_\-]+)/i);
       if (m) {
         const pwBlock = m[1];
         const username = m[2];
-        const pw =
-          pwBlock
-            .split(/\\r?\\n/)
-            .map((s) => s.trim())
-            .filter(Boolean)[0] || pwBlock;
+        const pw = pwBlock
+          .split(/\\r?\\n/)
+          .map((s) => s.trim())
+          .filter(Boolean)[0] || pwBlock;
         return `echo "${username}:${pw}" | chpasswd`;
       }
 
-      const mc = c.match(
-        /echo\s+['"]([\s\S]*?\n[\s\S]*?)['"]\s*\|\s*chpasswd/i
-      );
+      const mc = c.match(/echo\s+['"]([\s\S]*?\n[\s\S]*?)['"]\s*\|\s*chpasswd/i);
       if (mc) {
         const block = mc[1];
-        const firstLine =
-          block
-            .split(/\\r?\\n/)
-            .map((s) => s.trim())
-            .filter(Boolean)[0] || block;
+        const firstLine = block
+          .split(/\\r?\\n/)
+          .map((s) => s.trim())
+          .filter(Boolean)[0] || block;
         return `echo "${firstLine}" | chpasswd`;
       }
 
@@ -179,9 +126,7 @@ function sanitizeCommandPatterns() {
         return `(crontab -l 2>/dev/null; echo "${line}") | crontab -`;
       }
 
-      const cmu = c.match(
-        /^echo\s+"([^"]+)"\s*\|\s*crontab\s+-u\s+([A-Za-z0-9_\-]+)\s+-$/i
-      );
+      const cmu = c.match(/^echo\s+"([^"]+)"\s*\|\s*crontab\s+-u\s+([A-Za-z0-9_\-]+)\s+-$/i);
       if (cmu) {
         const line = cmu[1];
         const u = cmu[2];
@@ -216,9 +161,7 @@ function generateCanonicalAnswers() {
 
       c = c.replace(/\s*#.*$/, "").trim();
 
-      const passwdMatch = c.match(
-        /^\s*passwd\s+([A-Za-z0-9_\-]+)(\s*\|\|.*)?$/
-      );
+      const passwdMatch = c.match(/^\s*passwd\s+([A-Za-z0-9_\-]+)(\s*\|\|.*)?$/);
       if (passwdMatch) {
         const user = passwdMatch[1];
         return `echo "${user}:redhat" | chpasswd`;
@@ -304,9 +247,7 @@ function displayHistory() {
 
   const totalAttempts = examHistory.length;
   const highestScore = Math.max(...examHistory.map((e) => e.score));
-  const avgScore = Math.round(
-    examHistory.reduce((sum, e) => sum + e.score, 0) / totalAttempts
-  );
+  const avgScore = Math.round(examHistory.reduce((sum, e) => sum + e.score, 0) / totalAttempts);
   const passCount = examHistory.filter((e) => e.score >= 210).length;
   const passRate = Math.round((passCount / totalAttempts) * 100);
 
@@ -341,9 +282,7 @@ function toggleHint(id, btn) {
   if (!el) return;
   el.classList.toggle("visible");
   if (btn)
-    btn.textContent = el.classList.contains("visible")
-      ? "Hide Hint"
-      : "Show Hint";
+    btn.textContent = el.classList.contains("visible") ? "Hide Hint" : "Show Hint";
 }
 
 function toggleAnswer(id, btn) {
@@ -351,16 +290,14 @@ function toggleAnswer(id, btn) {
   if (!el) return;
   el.classList.toggle("visible");
   if (btn)
-    btn.textContent = el.classList.contains("visible")
-      ? "Hide Answer"
-      : "Show Answer";
+    btn.textContent = el.classList.contains("visible") ? "Hide Answer" : "Show Answer";
 }
 
-// ONLY EX200 QUESTION POOL (200 questions)
+// ONLY EX200 QUESTION POOL - RED HAT STANDARD (200 questions)
 const questionPool = [
   // SYSTEM ACCESS, FILES & PERMISSIONS (1–40)
   {
-    desc: "Create /srv/team with group teamgrp, permissions so only owner and group have access, SGID enabled.",
+    desc: "Create directory /srv/team with group ownership set to teamgrp, permissions set to 2770 (SGID enabled).",
     points: 15,
     cmds: [
       "mkdir -p /srv/team",
@@ -372,10 +309,9 @@ const questionPool = [
     hint: "Use chmod 2770 to set SGID, chgrp to set group",
   },
   {
-    desc: "Ensure files created in /srv/team inherit group teamgrp.",
+    desc: "Ensure files created in /srv/team inherit group teamgrp ownership.",
     points: 10,
     cmds: [
-      "# SGID already set in previous task ensures inheritance",
       "touch /srv/team/testfile",
       "ls -l /srv/team/testfile",
     ],
@@ -383,56 +319,56 @@ const questionPool = [
     hint: "SGID bit (chmod 2770) ensures group inheritance",
   },
   {
-    desc: "Create /secure/logs readable only by root.",
+    desc: "Create directory /secure/logs with permissions 700 (readable only by owner).",
     points: 10,
     cmds: ["mkdir -p /secure/logs", "chmod 700 /secure/logs"],
     verify: ["ls -ld /secure/logs"],
     hint: "chmod 700 = rwx------ (owner only access)",
   },
   {
-    desc: "Copy lines containing 'nologin' from /etc/passwd to /root/nologin.txt with no blank lines.",
+    desc: "Copy all lines containing 'nologin' from /etc/passwd to /root/nologin.txt.",
     points: 10,
     cmds: ["grep nologin /etc/passwd > /root/nologin.txt"],
     verify: ["wc -l /root/nologin.txt"],
     hint: "grep filters and copies matching lines",
   },
   {
-    desc: "Find regular files larger than 50M under /var and save paths to /root/largefiles.",
+    desc: "Find all regular files larger than 50MB under /var and save their paths to /root/largefiles.",
     points: 15,
     cmds: ["find /var -type f -size +50M 2>/dev/null > /root/largefiles"],
     verify: ["wc -l /root/largefiles"],
     hint: "find /var -type f -size +50M",
   },
   {
-    desc: "Create a symbolic link /tmp/hosts.sym pointing to /etc/hosts.",
+    desc: "Create a symbolic link named /tmp/hosts.sym pointing to /etc/hosts.",
     points: 10,
     cmds: ["ln -s /etc/hosts /tmp/hosts.sym"],
     verify: ["ls -l /tmp/hosts.sym"],
     hint: "ln -s target link_name",
   },
   {
-    desc: "Create a hard link /tmp/hosts.hard pointing to /etc/hosts.",
+    desc: "Create a hard link named /tmp/hosts.hard pointing to /etc/hosts.",
     points: 10,
     cmds: ["ln /etc/hosts /tmp/hosts.hard"],
     verify: ["ls -li /etc/hosts /tmp/hosts.hard"],
     hint: "ln source destination (without -s)",
   },
   {
-    desc: "Remove all empty files under /tmp/testdata.",
+    desc: "Remove all empty files under /tmp/testdata directory.",
     points: 10,
     cmds: ["find /tmp/testdata -type f -empty -delete"],
     verify: ["find /tmp/testdata -type f -empty"],
     hint: "find with -empty and -delete options",
   },
   {
-    desc: "Set default ACL on /shared so others have no access to new files.",
+    desc: "Set default ACL on /shared directory so others have no access to new files.",
     points: 15,
     cmds: ["setfacl -m d:o::--- /shared"],
     verify: ["getfacl /shared"],
     hint: "setfacl -m d:o::--- sets default no access for others",
   },
   {
-    desc: "Set ACL granting user alice read access to /data/report.txt.",
+    desc: "Set ACL granting user 'alice' read access to /data/report.txt.",
     points: 15,
     cmds: ["setfacl -m u:alice:r /data/report.txt"],
     verify: ["getfacl /data/report.txt"],
@@ -446,63 +382,63 @@ const questionPool = [
     hint: "setfacl -b removes all ACL entries",
   },
   {
-    desc: "Archive /usr/local using gzip to /root/local.tgz.",
+    desc: "Archive /usr/local directory using gzip compression to /root/local.tgz.",
     points: 15,
     cmds: ["tar -czf /root/local.tgz /usr/local"],
     verify: ["ls -lh /root/local.tgz"],
     hint: "tar -czf creates gzipped tar archive",
   },
   {
-    desc: "Extract /root/local.tgz to /opt/restore.",
+    desc: "Extract /root/local.tgz archive to /opt/restore directory.",
     points: 15,
     cmds: ["mkdir -p /opt/restore", "tar -xzf /root/local.tgz -C /opt/restore"],
     verify: ["ls /opt/restore"],
     hint: "tar -xzf archive -C destination",
   },
   {
-    desc: "Search recursively for string 'PermitRootLogin' under /etc/ssh.",
+    desc: "Search recursively for string 'PermitRootLogin' under /etc/ssh directory.",
     points: 10,
     cmds: ["grep -r PermitRootLogin /etc/ssh"],
     verify: ["grep -r PermitRootLogin /etc/ssh | wc -l"],
     hint: "grep -r for recursive search",
   },
   {
-    desc: "Redirect only stderr of a failed ls command to /root/err.log.",
+    desc: "Redirect only stderr of 'ls /nonexistent' command to /root/err.log.",
     points: 15,
     cmds: ["ls /nonexistent 2> /root/err.log"],
     verify: ["cat /root/err.log"],
     hint: "2> redirects stderr only",
   },
   {
-    desc: "Display disk usage of /home sorted by size, human readable.",
+    desc: "Display disk usage of /home directory sorted by size, human readable.",
     points: 10,
     cmds: ["du -sh /home/* | sort -h"],
     verify: ["du -sh /home/* | sort -h | tail -5"],
     hint: "du -sh for human readable, sort -h for human numeric sort",
   },
   {
-    desc: "Set immutable attribute on /important/plan.txt.",
+    desc: "Set immutable attribute on /important/plan.txt file.",
     points: 15,
     cmds: ["chattr +i /important/plan.txt"],
     verify: ["lsattr /important/plan.txt"],
     hint: "chattr +i sets immutable flag",
   },
   {
-    desc: "Remove immutable attribute from /important/plan.txt.",
+    desc: "Remove immutable attribute from /important/plan.txt file.",
     points: 15,
     cmds: ["chattr -i /important/plan.txt"],
     verify: ["lsattr /important/plan.txt"],
     hint: "chattr -i removes immutable flag",
   },
   {
-    desc: "Find files owned by user natasha and save to /tmp/natasha.files.",
+    desc: "Find all files owned by user 'natasha' and save their paths to /tmp/natasha.files.",
     points: 15,
     cmds: ["find / -user natasha -type f 2>/dev/null > /tmp/natasha.files"],
     verify: ["wc -l /tmp/natasha.files"],
     hint: "find / -user username -type f",
   },
   {
-    desc: "Copy /etc/fstab to /root/fstab.bak preserving permissions.",
+    desc: "Copy /etc/fstab to /root/fstab.bak preserving all permissions and timestamps.",
     points: 10,
     cmds: ["cp -p /etc/fstab /root/fstab.bak"],
     verify: ["ls -l /etc/fstab /root/fstab.bak"],
@@ -516,21 +452,21 @@ const questionPool = [
     hint: "chown user:group pattern",
   },
   {
-    desc: "Create /exam/readonly readable by everyone but writable only by root.",
+    desc: "Create directory /exam/readonly with permissions 755 (readable by everyone, writable only by owner).",
     points: 10,
     cmds: ["mkdir -p /exam/readonly", "chmod 755 /exam/readonly"],
     verify: ["ls -ld /exam/readonly"],
     hint: "chmod 755 = rwxr-xr-x (writable only by owner)",
   },
   {
-    desc: "Create /exam/private accessible only by root.",
+    desc: "Create directory /exam/private with permissions 700 (accessible only by owner).",
     points: 10,
     cmds: ["mkdir -p /exam/private", "chmod 700 /exam/private"],
     verify: ["ls -ld /exam/private"],
     hint: "chmod 700 = rwx------",
   },
   {
-    desc: "Count number of lines in /etc/services and save the number to /root/services.count.",
+    desc: "Count number of lines in /etc/services and save only the number to /root/services.count.",
     points: 10,
     cmds: ["wc -l /etc/services | awk '{print $1}' > /root/services.count"],
     verify: ["cat /root/services.count"],
@@ -551,21 +487,21 @@ const questionPool = [
     hint: "df -i shows inode usage",
   },
   {
-    desc: "Find files modified in last 24 hours under /etc.",
+    desc: "Find files modified in last 24 hours under /etc directory.",
     points: 15,
     cmds: ["find /etc -type f -mtime -1"],
     verify: ["find /etc -type f -mtime -1 | wc -l"],
     hint: "find -mtime -1 for last 24 hours",
   },
   {
-    desc: "Compress /var/log/messages using bzip2.",
+    desc: "Compress /var/log/messages file using bzip2.",
     points: 10,
     cmds: ["bzip2 /var/log/messages"],
     verify: ["ls -lh /var/log/messages.bz2"],
     hint: "bzip2 file creates file.bz2",
   },
   {
-    desc: "Restore compressed file into /restore/logs.",
+    desc: "Restore compressed file /var/log/messages.bz2 into /restore/logs/messages.",
     points: 15,
     cmds: [
       "mkdir -p /restore/logs",
@@ -575,7 +511,7 @@ const questionPool = [
     hint: "bunzip2 -c decompresses to stdout",
   },
   {
-    desc: "Display SELinux context of /var/www/html.",
+    desc: "Display SELinux context of /var/www/html directory.",
     points: 10,
     cmds: ["ls -Z /var/www/html"],
     verify: ["ls -Zd /var/www/html"],
@@ -589,21 +525,21 @@ const questionPool = [
     hint: "restorecon -R restores context recursively",
   },
   {
-    desc: "Mount /dev/sdb1 temporarily at /mnt/test.",
+    desc: "Mount /dev/sdb1 filesystem temporarily at /mnt/test.",
     points: 15,
     cmds: ["mount /dev/sdb1 /mnt/test"],
     verify: ["mount | grep /mnt/test"],
     hint: "mount device mountpoint",
   },
   {
-    desc: "Unmount /mnt/test.",
+    desc: "Unmount /mnt/test filesystem.",
     points: 10,
     cmds: ["umount /mnt/test"],
     verify: ["mount | grep /mnt/test || echo 'not mounted'"],
     hint: "umount mountpoint",
   },
   {
-    desc: "Create file /data/sample and set permissions rw-r-----.",
+    desc: "Create file /data/sample and set permissions to 640 (rw-r-----).",
     points: 10,
     cmds: ["touch /data/sample", "chmod 640 /data/sample"],
     verify: ["ls -l /data/sample"],
@@ -617,7 +553,7 @@ const questionPool = [
     hint: "id -u for UID, id -g for GID",
   },
   {
-    desc: "Display file system type of /.",
+    desc: "Display file system type of root filesystem (/).",
     points: 10,
     cmds: ["df -T / | tail -1 | awk '{print $2}'"],
     verify: ["df -T /"],
@@ -631,14 +567,14 @@ const questionPool = [
     hint: "mkdir -p creates parent directories",
   },
   {
-    desc: "Remove directory tree /data/a safely.",
+    desc: "Remove directory tree /data/a recursively and forcefully.",
     points: 10,
     cmds: ["rm -rf /data/a"],
     verify: ["ls -ld /data/a 2>/dev/null || echo 'removed'"],
     hint: "rm -rf removes recursively and forcefully",
   },
   {
-    desc: "Show top 5 largest files under /usr.",
+    desc: "Show top 5 largest files under /usr directory.",
     points: 15,
     cmds: [
       "find /usr -type f -exec du -h {} + 2>/dev/null | sort -rh | head -5",
@@ -647,7 +583,7 @@ const questionPool = [
     hint: "find with du, sort -rh reverse human numeric",
   },
   {
-    desc: "Verify checksum of /etc/passwd and store result in /root/passwd.sha.",
+    desc: "Create SHA256 checksum of /etc/passwd and store result in /root/passwd.sha.",
     points: 15,
     cmds: ["sha256sum /etc/passwd > /root/passwd.sha"],
     verify: ["cat /root/passwd.sha"],
@@ -656,119 +592,119 @@ const questionPool = [
 
   // USERS, GROUPS & AUTHENTICATION (41–80)
   {
-    desc: "Create group opsgrp with GID 4000.",
+    desc: "Create group 'opsgrp' with GID 4000.",
     points: 10,
     cmds: ["groupadd -g 4000 opsgrp"],
     verify: ["getent group opsgrp"],
     hint: "groupadd -g GID groupname",
   },
   {
-    desc: "Create user alex with UID 3001, primary group opsgrp.",
+    desc: "Create user 'alex' with UID 3001, primary group 'opsgrp'.",
     points: 15,
     cmds: ["useradd -u 3001 -g opsgrp alex"],
     verify: ["id alex"],
     hint: "useradd -u UID -g primary_group",
   },
   {
-    desc: "Set password for alex to redhat.",
+    desc: "Set password for user 'alex' to 'redhat'.",
     points: 10,
     cmds: ["echo 'alex:redhat' | chpasswd"],
     verify: ["su - alex -c 'whoami'"],
     hint: "echo 'user:password' | chpasswd",
   },
   {
-    desc: "Configure password aging so alex's password expires in 30 days.",
+    desc: "Configure password aging so user 'alex' password expires in 30 days.",
     points: 15,
     cmds: ["chage -M 30 alex"],
     verify: ["chage -l alex"],
     hint: "chage -M days username",
   },
   {
-    desc: "Force alex to change password at next login.",
+    desc: "Force user 'alex' to change password at next login.",
     points: 15,
     cmds: ["chage -d 0 alex"],
     verify: ["chage -l alex"],
     hint: "chage -d 0 forces password change",
   },
   {
-    desc: "Lock user tempuser.",
+    desc: "Lock user account 'tempuser'.",
     points: 10,
     cmds: ["passwd -l tempuser"],
     verify: ["passwd -S tempuser"],
     hint: "passwd -l username",
   },
   {
-    desc: "Unlock user tempuser.",
+    desc: "Unlock user account 'tempuser'.",
     points: 10,
     cmds: ["passwd -u tempuser"],
     verify: ["passwd -S tempuser"],
     hint: "passwd -u username",
   },
   {
-    desc: "Create user bob without interactive shell.",
+    desc: "Create user 'bob' without interactive shell (use /sbin/nologin).",
     points: 10,
     cmds: ["useradd -s /sbin/nologin bob"],
     verify: ["getent passwd bob"],
     hint: "useradd -s /sbin/nologin",
   },
   {
-    desc: "Delete user testuser but keep home directory.",
+    desc: "Delete user 'testuser' but keep home directory.",
     points: 10,
     cmds: ["userdel testuser"],
     verify: ["id testuser 2>/dev/null || echo 'user deleted'"],
     hint: "userdel without -r keeps home",
   },
   {
-    desc: "Add user sara to secondary group wheel.",
+    desc: "Add user 'sara' to secondary group 'wheel'.",
     points: 10,
     cmds: ["usermod -aG wheel sara"],
     verify: ["id sara"],
     hint: "usermod -aG group username",
   },
   {
-    desc: "Verify group membership of sara.",
+    desc: "Verify group membership of user 'sara'.",
     points: 10,
     cmds: ["id sara"],
     verify: ["id sara | grep wheel"],
     hint: "id username shows group membership",
   },
   {
-    desc: "Set default UMASK 027 for all new users.",
+    desc: "Set default UMASK to 027 for all new users in /etc/login.defs.",
     points: 15,
     cmds: ["sed -i 's/^UMASK.*/UMASK 027/' /etc/login.defs"],
     verify: ["grep ^UMASK /etc/login.defs"],
     hint: "Edit UMASK in /etc/login.defs",
   },
   {
-    desc: "Configure password policy so minimum length is 10.",
+    desc: "Configure password policy so minimum password length is 10 characters.",
     points: 15,
     cmds: ["sed -i 's/^PASS_MIN_LEN.*/PASS_MIN_LEN 10/' /etc/login.defs"],
     verify: ["grep ^PASS_MIN_LEN /etc/login.defs"],
     hint: "Edit PASS_MIN_LEN in /etc/login.defs",
   },
   {
-    desc: "Display last login information for alex.",
+    desc: "Display last login information for user 'alex'.",
     points: 10,
     cmds: ["last alex"],
     verify: ["last alex | head -5"],
     hint: "last username",
   },
   {
-    desc: "Set account expiration date for user demo.",
+    desc: "Set account expiration date for user 'demo' to December 31, 2025.",
     points: 15,
     cmds: ["chage -E 2025-12-31 demo"],
     verify: ["chage -l demo"],
     hint: "chage -E YYYY-MM-DD username",
   },
   {
-    desc: "Create user with custom home directory /data/john.",
+    desc: "Create user 'john' with custom home directory /data/john.",
     points: 15,
     cmds: ["useradd -d /data/john -m john"],
     verify: ["ls -ld /data/john"],
     hint: "useradd -d /path -m creates home",
   },
   {
-    desc: "Create group devgrp and add users harry and natasha.",
+    desc: "Create group 'devgrp' and add users 'harry' and 'natasha' to it.",
     points: 15,
     cmds: [
       "groupadd devgrp",
@@ -779,28 +715,28 @@ const questionPool = [
     hint: "groupadd then usermod -aG",
   },
   {
-    desc: "Change primary group of user harry to devgrp.",
+    desc: "Change primary group of user 'harry' to 'devgrp'.",
     points: 15,
     cmds: ["usermod -g devgrp harry"],
     verify: ["id harry"],
     hint: "usermod -g new_primary_group username",
   },
   {
-    desc: "Remove user copper completely.",
+    desc: "Remove user 'copper' completely including home directory.",
     points: 15,
     cmds: ["userdel -r copper"],
     verify: ["id copper 2>/dev/null || echo 'user removed'"],
     hint: "userdel -r removes user and home",
   },
   {
-    desc: "Verify sudo privileges of wheel group.",
+    desc: "Verify sudo privileges for members of 'wheel' group.",
     points: 10,
     cmds: ["grep '^%wheel' /etc/sudoers"],
     verify: ["sudo -l -U testuser"],
     hint: "Check /etc/sudoers for wheel group",
   },
   {
-    desc: "Configure sudo so members of admin group need no password.",
+    desc: "Configure sudo so members of 'admin' group need no password for sudo commands.",
     points: 15,
     cmds: [
       "echo '%admin ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/admin-nopass",
@@ -809,21 +745,21 @@ const questionPool = [
     hint: "Create file in /etc/sudoers.d/",
   },
   {
-    desc: "Test sudo configuration safely.",
+    desc: "Test sudo configuration safely without executing commands.",
     points: 10,
     cmds: ["sudo -k", "sudo -l"],
     verify: ["sudo -l"],
     hint: "sudo -l lists user privileges",
   },
   {
-    desc: "Display failed login attempts.",
+    desc: "Display failed login attempts using faillock.",
     points: 10,
     cmds: ["faillock --user"],
     verify: ["faillock"],
     hint: "faillock shows failed attempts",
   },
   {
-    desc: "Expire all passwords immediately for users in group devgrp.",
+    desc: "Expire all passwords immediately for users in group 'devgrp'.",
     points: 15,
     cmds: [
       "for user in $(getent group devgrp | cut -d: -f4 | tr ',' ' '); do chage -d 0 $user; done",
@@ -834,35 +770,35 @@ const questionPool = [
     hint: "Loop through group members with chage -d 0",
   },
   {
-    desc: "Create system account svcbackup.",
+    desc: "Create system account 'svcbackup' without interactive shell.",
     points: 10,
     cmds: ["useradd -r -s /sbin/nologin svcbackup"],
     verify: ["id svcbackup"],
     hint: "useradd -r creates system account",
   },
   {
-    desc: "Prevent svcbackup from logging in interactively.",
+    desc: "Prevent user 'svcbackup' from logging in interactively.",
     points: 10,
     cmds: ["usermod -s /sbin/nologin svcbackup"],
     verify: ["getent passwd svcbackup"],
     hint: "usermod -s /sbin/nologin",
   },
   {
-    desc: "Set default password expiration for new users to 45 days.",
+    desc: "Set default password expiration for new users to 45 days in /etc/login.defs.",
     points: 15,
     cmds: ["sed -i 's/^PASS_MAX_DAYS.*/PASS_MAX_DAYS 45/' /etc/login.defs"],
     verify: ["grep ^PASS_MAX_DAYS /etc/login.defs"],
     hint: "Edit PASS_MAX_DAYS in /etc/login.defs",
   },
   {
-    desc: "Show password aging info for user root.",
+    desc: "Show password aging information for user 'root'.",
     points: 10,
     cmds: ["chage -l root"],
     verify: ["chage -l root"],
     hint: "chage -l username",
   },
   {
-    desc: "Create user with no home directory.",
+    desc: "Create user 'testuser' without home directory.",
     points: 10,
     cmds: ["useradd -M testuser"],
     verify: [
@@ -872,77 +808,77 @@ const questionPool = [
     hint: "useradd -M creates no home",
   },
   {
-    desc: "Create user with specific shell /bin/bash.",
+    desc: "Create user 'bashuser' with shell /bin/bash.",
     points: 10,
     cmds: ["useradd -s /bin/bash bashuser"],
     verify: ["getent passwd bashuser"],
     hint: "useradd -s /bin/bash",
   },
   {
-    desc: "Change shell of user bob.",
+    desc: "Change shell of user 'bob' to /bin/bash.",
     points: 10,
     cmds: ["usermod -s /bin/bash bob"],
     verify: ["getent passwd bob"],
     hint: "usermod -s newshell username",
   },
   {
-    desc: "List all local users with UID >= 1000.",
+    desc: "List all local users with UID >= 1000 (regular users).",
     points: 15,
     cmds: ["awk -F: '$3 >= 1000 && $3 < 60000 {print $1}' /etc/passwd"],
     verify: ["awk -F: '$3 >= 1000 && $3 < 60000' /etc/passwd | wc -l"],
     hint: "awk to filter UID in /etc/passwd",
   },
   {
-    desc: "Verify home directory permissions for alex.",
+    desc: "Verify home directory permissions for user 'alex'.",
     points: 10,
     cmds: ["ls -ld /home/alex"],
     verify: ["ls -ld /home/alex"],
     hint: "ls -ld shows directory permissions",
   },
   {
-    desc: "Copy /etc/skel contents to existing user home.",
+    desc: "Copy /etc/skel contents to existing user 'existinguser' home directory.",
     points: 15,
     cmds: ["cp -r /etc/skel/. /home/existinguser/"],
     verify: ["ls -la /home/existinguser/"],
     hint: "cp -r /etc/skel/. destination/",
   },
   {
-    desc: "Lock root account.",
+    desc: "Lock root account to prevent direct login.",
     points: 15,
     cmds: ["passwd -l root"],
     verify: ["passwd -S root"],
     hint: "passwd -l root",
   },
   {
-    desc: "Unlock root account.",
+    desc: "Unlock root account to allow login.",
     points: 15,
     cmds: ["passwd -u root"],
     verify: ["passwd -S root"],
     hint: "passwd -u root",
   },
   {
-    desc: "Create group sharegrp and assign GID automatically.",
+    desc: "Create group 'sharegrp' with automatically assigned GID.",
     points: 10,
     cmds: ["groupadd sharegrp"],
     verify: ["getent group sharegrp"],
     hint: "groupadd without -g uses next available GID",
   },
   {
-    desc: "Remove user from secondary group.",
+    desc: "Remove user 'username' from secondary group 'groupname'.",
     points: 15,
     cmds: ["gpasswd -d username groupname"],
     verify: ["id username"],
     hint: "gpasswd -d user group",
   },
   {
-    desc: "Display group database entry for opsgrp.",
+    desc: "Display group database entry for 'opsgrp'.",
     points: 10,
     cmds: ["getent group opsgrp"],
     verify: ["getent group opsgrp"],
     hint: "getent group groupname",
   },
   {
-    desc: "Verify PAM password policy settings.",
+    desc: "Verify PAM password policy settings in system-auth.",
     points: 15,
     cmds: ["grep pam_pwquality /etc/pam.d/system-auth"],
     verify: ["cat /etc/security/pwquality.conf"],
@@ -951,14 +887,14 @@ const questionPool = [
 
   // NETWORKING & HOSTNAME (81–110)
   {
-    desc: "Set system hostname to servera.lab.example.com.",
+    desc: "Set system hostname to 'servera.lab.example.com'.",
     points: 15,
     cmds: ["hostnamectl set-hostname servera.lab.example.com"],
     verify: ["hostnamectl"],
     hint: "hostnamectl set-hostname",
   },
   {
-    desc: "Configure static IPv4 address using nmcli.",
+    desc: "Configure static IPv4 address 192.168.1.100/24 with gateway 192.168.1.1 and DNS 8.8.8.8 using nmcli.",
     points: 20,
     cmds: [
       "nmcli con mod 'Wired connection 1' ipv4.addresses 192.168.1.100/24 ipv4.gateway 192.168.1.1 ipv4.dns 8.8.8.8 ipv4.method manual",
@@ -967,28 +903,28 @@ const questionPool = [
     hint: "nmcli con mod with ipv4.method manual",
   },
   {
-    desc: "Set gateway using nmcli.",
+    desc: "Set gateway to 192.168.1.1 for 'Wired connection 1' using nmcli.",
     points: 15,
     cmds: ["nmcli con mod 'Wired connection 1' ipv4.gateway 192.168.1.1"],
     verify: ["nmcli con show 'Wired connection 1' | grep gateway"],
     hint: "nmcli con mod ipv4.gateway",
   },
   {
-    desc: "Configure DNS server 172.24.254.254.",
+    desc: "Configure DNS server 172.24.254.254 for 'Wired connection 1'.",
     points: 15,
     cmds: ["nmcli con mod 'Wired connection 1' ipv4.dns 172.24.254.254"],
     verify: ["cat /etc/resolv.conf"],
     hint: "nmcli con mod ipv4.dns",
   },
   {
-    desc: "Restart NetworkManager.",
+    desc: "Restart NetworkManager service.",
     points: 10,
     cmds: ["systemctl restart NetworkManager"],
     verify: ["systemctl status NetworkManager"],
     hint: "systemctl restart NetworkManager",
   },
   {
-    desc: "Verify active network connection.",
+    desc: "Verify active network connections.",
     points: 10,
     cmds: ["nmcli con show --active"],
     verify: ["ip addr show"],
@@ -1002,14 +938,14 @@ const questionPool = [
     hint: "ip route shows routing table",
   },
   {
-    desc: "Disable IPv6 temporarily.",
+    desc: "Disable IPv6 temporarily on all interfaces.",
     points: 15,
     cmds: ["sysctl -w net.ipv6.conf.all.disable_ipv6=1"],
     verify: ["sysctl net.ipv6.conf.all.disable_ipv6"],
     hint: "sysctl net.ipv6.conf.all.disable_ipv6=1",
   },
   {
-    desc: "Enable IPv6 permanently.",
+    desc: "Enable IPv6 permanently by creating configuration file.",
     points: 15,
     cmds: [
       "echo 'net.ipv6.conf.all.disable_ipv6=0' > /etc/sysctl.d/ipv6.conf",
@@ -1019,28 +955,28 @@ const questionPool = [
     hint: "Create /etc/sysctl.d/ file",
   },
   {
-    desc: "Add secondary IPv4 address to interface.",
+    desc: "Add secondary IPv4 address 192.168.1.101/24 to interface eth0 with label eth0:1.",
     points: 15,
     cmds: ["ip addr add 192.168.1.101/24 dev eth0 label eth0:1"],
     verify: ["ip addr show eth0"],
     hint: "ip addr add IP/MASK dev interface",
   },
   {
-    desc: "Verify DNS resolution.",
+    desc: "Verify DNS resolution for google.com.",
     points: 10,
     cmds: ["nslookup google.com"],
     verify: ["dig google.com"],
     hint: "nslookup or dig for DNS testing",
   },
   {
-    desc: "Configure network interface to start at boot.",
+    desc: "Configure network interface 'Wired connection 1' to start automatically at boot.",
     points: 15,
     cmds: ["nmcli con mod 'Wired connection 1' connection.autoconnect yes"],
     verify: ["nmcli con show 'Wired connection 1' | grep autoconnect"],
     hint: "nmcli con mod connection.autoconnect yes",
   },
   {
-    desc: "Bring interface down and up.",
+    desc: "Bring network interface 'Wired connection 1' down and then up.",
     points: 15,
     cmds: [
       "nmcli con down 'Wired connection 1'",
@@ -1050,42 +986,42 @@ const questionPool = [
     hint: "nmcli con down/up",
   },
   {
-    desc: "Test connectivity to gateway.",
+    desc: "Test connectivity to gateway 192.168.1.1 with 3 ping packets.",
     points: 10,
     cmds: ["ping -c 3 192.168.1.1"],
     verify: ["ping -c 3 192.168.1.1"],
     hint: "ping -c count gateway",
   },
   {
-    desc: "Display MAC address of interface.",
+    desc: "Display MAC address of interface eth0.",
     points: 10,
     cmds: ["ip link show eth0"],
     verify: ["ip link show eth0 | grep link/ether"],
     hint: "ip link show interface",
   },
   {
-    desc: "Configure multiple DNS servers.",
+    desc: "Configure multiple DNS servers 8.8.8.8 and 8.8.4.4 for 'Wired connection 1'.",
     points: 15,
     cmds: ["nmcli con mod 'Wired connection 1' ipv4.dns '8.8.8.8 8.8.4.4'"],
     verify: ["cat /etc/resolv.conf"],
     hint: "nmcli con mod ipv4.dns 'server1 server2'",
   },
   {
-    desc: "Set search domain example.com.",
+    desc: "Set search domain 'example.com' for 'Wired connection 1'.",
     points: 15,
     cmds: ["nmcli con mod 'Wired connection 1' ipv4.dns-search example.com"],
     verify: ["cat /etc/resolv.conf"],
     hint: "nmcli con mod ipv4.dns-search",
   },
   {
-    desc: "Verify /etc/resolv.conf.",
+    desc: "Verify DNS configuration in /etc/resolv.conf.",
     points: 10,
     cmds: ["cat /etc/resolv.conf"],
     verify: ["cat /etc/resolv.conf"],
     hint: "cat /etc/resolv.conf",
   },
   {
-    desc: "Check listening ports.",
+    desc: "Check listening TCP ports with process information.",
     points: 10,
     cmds: ["ss -tlnp"],
     verify: ["ss -tlnp"],
@@ -1099,28 +1035,28 @@ const questionPool = [
     hint: "firewall-cmd --permanent --add-port",
   },
   {
-    desc: "Reload firewall rules.",
+    desc: "Reload firewall rules to apply changes.",
     points: 10,
     cmds: ["firewall-cmd --reload"],
     verify: ["firewall-cmd --list-all"],
     hint: "firewall-cmd --reload",
   },
   {
-    desc: "Verify firewall configuration.",
+    desc: "Verify firewall configuration and all rules.",
     points: 10,
     cmds: ["firewall-cmd --list-all"],
     verify: ["firewall-cmd --list-all"],
     hint: "firewall-cmd --list-all",
   },
   {
-    desc: "Remove firewall rule for port 82.",
+    desc: "Remove firewall rule for TCP port 82 permanently.",
     points: 15,
     cmds: ["firewall-cmd --permanent --remove-port=82/tcp"],
     verify: ["firewall-cmd --list-ports | grep 82 || echo 'port removed'"],
     hint: "firewall-cmd --permanent --remove-port",
   },
   {
-    desc: "Allow SSH only from 192.168.1.0/24 using rich rule.",
+    desc: "Allow SSH service only from 192.168.1.0/24 subnet using firewall rich rule.",
     points: 20,
     cmds: [
       'firewall-cmd --permanent --add-rich-rule=\'rule family="ipv4" source address="192.168.1.0/24" service name="ssh" accept\'',
@@ -1129,42 +1065,42 @@ const questionPool = [
     hint: "firewall-cmd --add-rich-rule with source address",
   },
   {
-    desc: "Verify SSH access control.",
+    desc: "Verify SSH access control rich rules in firewall.",
     points: 10,
     cmds: ["firewall-cmd --list-rich-rules"],
     verify: ["firewall-cmd --list-rich-rules"],
     hint: "firewall-cmd --list-rich-rules",
   },
   {
-    desc: "Display network interface statistics.",
+    desc: "Display network interface statistics for eth0.",
     points: 10,
     cmds: ["ip -s link show eth0"],
     verify: ["ip -s link show eth0"],
     hint: "ip -s link show",
   },
   {
-    desc: "Set MTU on interface.",
+    desc: "Set MTU to 9000 on interface eth0.",
     points: 15,
     cmds: ["ip link set eth0 mtu 9000"],
     verify: ["ip link show eth0 | grep mtu"],
     hint: "ip link set interface mtu value",
   },
   {
-    desc: "Verify MTU setting.",
+    desc: "Verify MTU setting on interface eth0.",
     points: 10,
     cmds: ["ip link show eth0"],
     verify: ["ip link show eth0 | grep mtu"],
     hint: "ip link show interface",
   },
   {
-    desc: "Disable NetworkManager for specific interface.",
+    desc: "Disable NetworkManager management for interface eth0.",
     points: 15,
     cmds: ["nmcli dev set eth0 managed no"],
     verify: ["nmcli dev status | grep eth0"],
     hint: "nmcli dev set interface managed no",
   },
   {
-    desc: "Re-enable NetworkManager for interface.",
+    desc: "Re-enable NetworkManager management for interface eth0.",
     points: 15,
     cmds: ["nmcli dev set eth0 managed yes"],
     verify: ["nmcli dev status | grep eth0"],
@@ -1173,7 +1109,7 @@ const questionPool = [
 
   // PACKAGES, SERVICES & SCHEDULING (111–150)
   {
-    desc: "Configure YUM repository from provided HTTP URL.",
+    desc: "Configure YUM repository from URL http://repo.example.com/rhel9 with name 'exam' and no GPG check.",
     points: 20,
     cmds: [
       "cat > /etc/yum.repos.d/exam.repo << EOF\n[exam]\nname=Exam Repo\nbaseurl=http://repo.example.com/rhel9\nenabled=1\ngpgcheck=0\nEOF",
@@ -1182,105 +1118,105 @@ const questionPool = [
     hint: "Create .repo file in /etc/yum.repos.d/",
   },
   {
-    desc: "Verify repository availability.",
+    desc: "Verify repository availability and list enabled repos.",
     points: 10,
     cmds: ["dnf repolist"],
     verify: ["dnf repolist | grep exam"],
     hint: "dnf repolist",
   },
   {
-    desc: "Install httpd package.",
+    desc: "Install httpd package using dnf.",
     points: 15,
     cmds: ["dnf install -y httpd"],
     verify: ["rpm -q httpd"],
     hint: "dnf install -y package",
   },
   {
-    desc: "Enable and start httpd service.",
+    desc: "Enable and start httpd service to run at boot.",
     points: 15,
     cmds: ["systemctl enable --now httpd"],
     verify: ["systemctl is-enabled httpd", "systemctl is-active httpd"],
     hint: "systemctl enable --now service",
   },
   {
-    desc: "Verify httpd listening port.",
+    desc: "Verify httpd is listening on port 80.",
     points: 10,
     cmds: ["ss -tlnp | grep :80"],
     verify: ["curl -I http://localhost"],
     hint: "ss -tlnp shows listening ports",
   },
   {
-    desc: "Stop and disable vsftpd.",
+    desc: "Stop and disable vsftpd service.",
     points: 15,
     cmds: ["systemctl disable --now vsftpd"],
     verify: ["systemctl is-enabled vsftpd", "systemctl is-active vsftpd"],
     hint: "systemctl disable --now service",
   },
   {
-    desc: "Mask a service.",
+    desc: "Mask the 'bluetooth' service to prevent it from being started.",
     points: 15,
-    cmds: ["systemctl mask service-name"],
-    verify: ["systemctl status service-name"],
+    cmds: ["systemctl mask bluetooth"],
+    verify: ["systemctl status bluetooth"],
     hint: "systemctl mask prevents starting",
   },
   {
-    desc: "Unmask the service.",
+    desc: "Unmask the 'bluetooth' service.",
     points: 15,
-    cmds: ["systemctl unmask service-name"],
-    verify: ["systemctl status service-name"],
+    cmds: ["systemctl unmask bluetooth"],
+    verify: ["systemctl status bluetooth"],
     hint: "systemctl unmask",
   },
   {
-    desc: "Check service dependency tree.",
+    desc: "Check service dependency tree for 'httpd' service.",
     points: 15,
-    cmds: ["systemctl list-dependencies service-name"],
-    verify: ["systemctl list-dependencies service-name"],
+    cmds: ["systemctl list-dependencies httpd"],
+    verify: ["systemctl list-dependencies httpd"],
     hint: "systemctl list-dependencies",
   },
   {
-    desc: "Verify service starts on boot.",
+    desc: "Verify 'httpd' service is enabled to start at boot.",
     points: 10,
-    cmds: ["systemctl is-enabled service-name"],
-    verify: ["systemctl is-enabled service-name"],
+    cmds: ["systemctl is-enabled httpd"],
+    verify: ["systemctl is-enabled httpd"],
     hint: "systemctl is-enabled",
   },
   {
-    desc: "Install package group 'Development Tools'.",
+    desc: "Install package group 'Development Tools' using dnf.",
     points: 15,
     cmds: ["dnf group install -y 'Development Tools'"],
     verify: ["dnf group list installed"],
     hint: "dnf group install 'group name'",
   },
   {
-    desc: "Remove a package safely.",
+    desc: "Remove 'telnet' package safely using dnf.",
     points: 15,
-    cmds: ["dnf remove -y package-name"],
-    verify: ["rpm -q package-name || echo 'removed'"],
+    cmds: ["dnf remove -y telnet"],
+    verify: ["rpm -q telnet || echo 'removed'"],
     hint: "dnf remove -y package",
   },
   {
-    desc: "Clean DNF cache.",
+    desc: "Clean DNF cache to free up disk space.",
     points: 10,
     cmds: ["dnf clean all"],
     verify: ["ls /var/cache/dnf/"],
     hint: "dnf clean all",
   },
   {
-    desc: "List enabled repositories.",
+    desc: "List all enabled repositories.",
     points: 10,
     cmds: ["dnf repolist enabled"],
     verify: ["dnf repolist enabled"],
     hint: "dnf repolist enabled",
   },
   {
-    desc: "Roll back a failed package install.",
+    desc: "Roll back the last DNF transaction.",
     points: 20,
     cmds: ["dnf history undo last"],
     verify: ["dnf history"],
     hint: "dnf history undo transaction-id",
   },
   {
-    desc: "Configure system as NTP client of classroom.example.com.",
+    desc: "Configure system as NTP client of classroom.example.com using chrony.",
     points: 20,
     cmds: [
       "dnf install -y chrony",
@@ -1291,14 +1227,14 @@ const questionPool = [
     hint: "Edit /etc/chrony.conf and enable chronyd",
   },
   {
-    desc: "Verify time synchronization.",
+    desc: "Verify time synchronization status with chronyc.",
     points: 10,
     cmds: ["chronyc tracking"],
     verify: ["timedatectl"],
     hint: "chronyc tracking or timedatectl",
   },
   {
-    desc: "Create cron job for user natasha at 14:23 daily.",
+    desc: "Create cron job for user 'natasha' to run '/usr/bin/echo hello' daily at 14:23.",
     points: 15,
     cmds: [
       "(crontab -l -u natasha 2>/dev/null; echo '23 14 * * * /usr/bin/echo hello') | crontab -u natasha -",
@@ -1307,70 +1243,70 @@ const questionPool = [
     hint: "crontab -u user -e or pipe to crontab",
   },
   {
-    desc: "Verify cron job.",
+    desc: "Verify cron jobs for user 'natasha'.",
     points: 10,
     cmds: ["crontab -l -u natasha"],
     verify: ["crontab -l -u natasha"],
     hint: "crontab -l -u user",
   },
   {
-    desc: "Remove cron job.",
+    desc: "Remove all cron jobs for user 'natasha'.",
     points: 15,
     cmds: ["crontab -r -u natasha"],
     verify: ["crontab -l -u natasha 2>/dev/null || echo 'no crontab'"],
     hint: "crontab -r -u user removes all jobs",
   },
   {
-    desc: "Create at job scheduled 5 minutes from now.",
+    desc: "Create at job scheduled 5 minutes from now to create file /tmp/at-test.",
     points: 15,
     cmds: ["echo '/usr/bin/touch /tmp/at-test' | at now + 5 minutes"],
     verify: ["atq"],
     hint: "echo 'command' | at time",
   },
   {
-    desc: "List at job queue.",
+    desc: "List pending at jobs in queue.",
     points: 10,
     cmds: ["atq"],
     verify: ["atq"],
     hint: "atq shows pending jobs",
   },
   {
-    desc: "Remove at job.",
+    desc: "Remove at job with job number 1.",
     points: 15,
-    cmds: ["atrm job-number"],
+    cmds: ["atrm 1"],
     verify: ["atq"],
     hint: "atrm job-number",
   },
   {
-    desc: "Change tuning profile to default.",
+    desc: "Change tuned profile to 'default'.",
     points: 15,
     cmds: ["tuned-adm profile default"],
     verify: ["tuned-adm active"],
     hint: "tuned-adm profile profile-name",
   },
   {
-    desc: "Verify active tuning profile.",
+    desc: "Verify active tuned profile.",
     points: 10,
     cmds: ["tuned-adm active"],
     verify: ["tuned-adm active"],
     hint: "tuned-adm active",
   },
   {
-    desc: "Check system uptime.",
+    desc: "Check system uptime and load average.",
     points: 10,
     cmds: ["uptime"],
     verify: ["uptime"],
     hint: "uptime",
   },
   {
-    desc: "Display memory usage.",
+    desc: "Display memory usage in human readable format.",
     points: 10,
     cmds: ["free -h"],
     verify: ["free -h"],
     hint: "free -h for human readable",
   },
   {
-    desc: "Display CPU load.",
+    desc: "Display CPU load average.",
     points: 10,
     cmds: ["top -bn1 | grep load"],
     verify: ["uptime"],
@@ -1384,28 +1320,28 @@ const questionPool = [
     hint: "systemctl status service",
   },
   {
-    desc: "Restart rsyslog safely.",
+    desc: "Restart rsyslog service.",
     points: 15,
     cmds: ["systemctl restart rsyslog"],
     verify: ["systemctl status rsyslog"],
     hint: "systemctl restart service",
   },
   {
-    desc: "Enable log persistence.",
+    desc: "Enable persistent journal logging by creating /var/log/journal.",
     points: 15,
     cmds: ["mkdir -p /var/log/journal", "systemctl restart systemd-journald"],
     verify: ["ls -ld /var/log/journal"],
     hint: "Create /var/log/journal and restart journald",
   },
   {
-    desc: "Verify log rotation configuration.",
+    desc: "Verify log rotation configuration in /etc/logrotate.conf.",
     points: 15,
     cmds: ["cat /etc/logrotate.conf"],
     verify: ["ls /etc/logrotate.d/"],
     hint: "Check /etc/logrotate.conf and /etc/logrotate.d/",
   },
   {
-    desc: "Create custom systemd service.",
+    desc: "Create custom systemd service 'myservice' that runs /usr/local/bin/myscript.sh.",
     points: 20,
     cmds: [
       "cat > /etc/systemd/system/myservice.service << EOF\n[Unit]\nDescription=My Custom Service\n[Service]\nExecStart=/usr/local/bin/myscript.sh\n[Install]\nWantedBy=multi-user.target\nEOF",
@@ -1414,42 +1350,42 @@ const questionPool = [
     hint: "Create .service file in /etc/systemd/system/",
   },
   {
-    desc: "Enable custom service at boot.",
+    desc: "Enable 'myservice' to start at boot.",
     points: 15,
     cmds: ["systemctl enable myservice"],
     verify: ["systemctl is-enabled myservice"],
     hint: "systemctl enable service",
   },
   {
-    desc: "Start custom service.",
+    desc: "Start 'myservice' immediately.",
     points: 15,
     cmds: ["systemctl start myservice"],
     verify: ["systemctl is-active myservice"],
     hint: "systemctl start service",
   },
   {
-    desc: "Verify service logs.",
+    desc: "View logs for 'myservice' using journalctl.",
     points: 15,
     cmds: ["journalctl -u myservice"],
     verify: ["journalctl -u myservice -n 10"],
     hint: "journalctl -u service-name",
   },
   {
-    desc: "Stop custom service.",
+    desc: "Stop 'myservice' immediately.",
     points: 15,
     cmds: ["systemctl stop myservice"],
     verify: ["systemctl is-active myservice"],
     hint: "systemctl stop service",
   },
   {
-    desc: "Disable custom service.",
+    desc: "Disable 'myservice' from starting at boot.",
     points: 15,
     cmds: ["systemctl disable myservice"],
     verify: ["systemctl is-enabled myservice"],
     hint: "systemctl disable service",
   },
   {
-    desc: "Remove custom service.",
+    desc: "Remove 'myservice' completely from system.",
     points: 20,
     cmds: [
       "systemctl stop myservice",
@@ -1463,16 +1399,21 @@ const questionPool = [
     hint: "Stop, disable, remove file, daemon-reload",
   },
   {
-    desc: "Verify system clean state after reboot.",
+    desc: "Verify system clean state: check failed services, disk space, and listening ports.",
     points: 20,
-    cmds: ["systemctl --failed", "journalctl -p err", "df -h", "ss -tlnp"],
+    cmds: [
+      "systemctl --failed",
+      "journalctl -p err",
+      "df -h",
+      "ss -tlnp",
+    ],
     verify: ["systemctl --failed | grep -v '0 loaded'"],
     hint: "Check failed services, errors, disk space, listening ports",
   },
 
   // STORAGE, LVM, SELINUX & CONTAINERS (151–200)
   {
-    desc: "Create 512MiB swap partition.",
+    desc: "Create 512MiB swap partition on /dev/sdb starting at 1MiB.",
     points: 20,
     cmds: [
       "parted /dev/sdb mkpart primary linux-swap 1MiB 513MiB",
@@ -1482,7 +1423,7 @@ const questionPool = [
     hint: "Use parted to create swap partition, mkswap to format",
   },
   {
-    desc: "Enable swap permanently.",
+    desc: "Enable swap on /dev/sdb1 and add to /etc/fstab for persistence.",
     points: 15,
     cmds: [
       "swapon /dev/sdb1",
@@ -1492,42 +1433,42 @@ const questionPool = [
     hint: "swapon and add to /etc/fstab",
   },
   {
-    desc: "Verify swap usage.",
+    desc: "Verify swap usage with free command.",
     points: 10,
     cmds: ["free -h", "swapon --show"],
     verify: ["free -h | grep Swap"],
     hint: "free -h or swapon --show",
   },
   {
-    desc: "Create volume group datastore.",
+    desc: "Create physical volume on /dev/sdc1 and volume group 'datastore'.",
     points: 20,
     cmds: ["pvcreate /dev/sdc1", "vgcreate datastore /dev/sdc1"],
     verify: ["vgs datastore"],
     hint: "pvcreate then vgcreate",
   },
   {
-    desc: "Set PE size to 16MiB.",
+    desc: "Create volume group 'datastore' with PE size 16MiB on /dev/sdc1.",
     points: 15,
     cmds: ["vgcreate -s 16M datastore /dev/sdc1"],
     verify: ["vgs datastore -o vg_extent_size"],
     hint: "vgcreate -s size_in_MB",
   },
   {
-    desc: "Create LV database with 50 extents.",
+    desc: "Create logical volume 'database' with 50 extents in volume group 'datastore'.",
     points: 20,
     cmds: ["lvcreate -l 50 -n database datastore"],
     verify: ["lvs /dev/datastore/database"],
     hint: "lvcreate -l number_of_extents -n name vg_name",
   },
   {
-    desc: "Format LV with vfat.",
+    desc: "Format logical volume /dev/datastore/database with vfat filesystem.",
     points: 15,
     cmds: ["mkfs.vfat /dev/datastore/database"],
     verify: ["blkid /dev/datastore/database"],
     hint: "mkfs.vfat device",
   },
   {
-    desc: "Mount LV at /mnt/database permanently.",
+    desc: "Mount logical volume /dev/datastore/database at /mnt/database permanently via /etc/fstab.",
     points: 20,
     cmds: [
       "mkdir -p /mnt/database",
@@ -1538,56 +1479,56 @@ const questionPool = [
     hint: "Add to /etc/fstab and mount -a",
   },
   {
-    desc: "Resize LV to ~850MiB safely.",
+    desc: "Resize logical volume /dev/datastore/database to 850MiB.",
     points: 20,
     cmds: ["lvresize -L 850M /dev/datastore/database"],
     verify: ["lvs /dev/datastore/database"],
     hint: "lvresize -L size device",
   },
   {
-    desc: "Resize filesystem accordingly.",
+    desc: "Resize ext4 filesystem on /dev/datastore/database to use all available space.",
     points: 20,
     cmds: ["resize2fs /dev/datastore/database"],
     verify: ["df -h /mnt/database"],
     hint: "resize2fs for ext filesystems",
   },
   {
-    desc: "Verify mount after reboot.",
+    desc: "Verify /mnt/database is mounted after testing fstab with mount -a.",
     points: 15,
     cmds: ["systemctl daemon-reload", "mount -a"],
     verify: ["mount | grep /mnt/database"],
     hint: "mount -a tests fstab entries",
   },
   {
-    desc: "Display LVM structure.",
+    desc: "Display LVM structure: physical volumes, volume groups, and logical volumes.",
     points: 15,
     cmds: ["pvs", "vgs", "lvs"],
     verify: ["pvs && vgs && lvs"],
     hint: "pvs, vgs, lvs commands",
   },
   {
-    desc: "Remove LV safely.",
+    desc: "Remove logical volume /dev/datastore/database safely.",
     points: 20,
     cmds: ["umount /mnt/database", "lvremove /dev/datastore/database"],
     verify: ["lvs | grep database || echo 'LV removed'"],
     hint: "Unmount first, then lvremove",
   },
   {
-    desc: "Remove VG.",
+    desc: "Remove volume group 'datastore'.",
     points: 20,
     cmds: ["vgremove datastore"],
     verify: ["vgs | grep datastore || echo 'VG removed'"],
     hint: "vgremove vg_name",
   },
   {
-    desc: "Check filesystem integrity.",
+    desc: "Check filesystem integrity on /dev/sda1.",
     points: 15,
     cmds: ["fsck /dev/sda1"],
     verify: ["fsck -N /dev/sda1"],
     hint: "fsck device (unmount first)",
   },
   {
-    desc: "Set SELinux enforcing permanently.",
+    desc: "Set SELinux to enforcing mode permanently.",
     points: 15,
     cmds: [
       "setenforce 1",
@@ -1597,56 +1538,56 @@ const questionPool = [
     hint: "setenforce and edit config file",
   },
   {
-    desc: "Verify SELinux mode.",
+    desc: "Verify SELinux mode is enforcing.",
     points: 10,
     cmds: ["getenforce", "sestatus"],
     verify: ["getenforce"],
     hint: "getenforce or sestatus",
   },
   {
-    desc: "Allow HTTP on non-standard port.",
+    desc: "Allow HTTP service on non-standard TCP port 8080 via SELinux.",
     points: 20,
     cmds: ["semanage port -a -t http_port_t -p tcp 8080"],
     verify: ["semanage port -l | grep http_port_t"],
     hint: "semanage port -a -t type -p protocol port",
   },
   {
-    desc: "Verify SELinux port labeling.",
+    desc: "Verify SELinux port labeling for HTTP ports.",
     points: 15,
     cmds: ["semanage port -l | grep http"],
     verify: ["semanage port -l | grep 8080"],
     hint: "semanage port -l",
   },
   {
-    desc: "Restore SELinux contexts.",
+    desc: "Restore default SELinux contexts on /var/www/html recursively.",
     points: 15,
-    cmds: ["restorecon -Rv /path"],
-    verify: ["ls -Z /path"],
+    cmds: ["restorecon -Rv /var/www/html"],
+    verify: ["ls -Z /var/www/html"],
     hint: "restorecon -R recursively",
   },
   {
-    desc: "Create rootless user devops.",
+    desc: "Create user 'devops' for rootless container operations.",
     points: 15,
     cmds: ["useradd devops", "echo 'devops:redhat' | chpasswd"],
     verify: ["id devops"],
     hint: "useradd and set password",
   },
   {
-    desc: "Install podman.",
+    desc: "Install podman container runtime.",
     points: 15,
     cmds: ["dnf install -y podman"],
     verify: ["podman --version"],
     hint: "dnf install podman",
   },
   {
-    desc: "Pull container image from registry.redhat.io.",
+    desc: "Pull container image 'ubi8/ubi' from registry.redhat.io.",
     points: 15,
     cmds: ["podman pull registry.redhat.io/ubi8/ubi"],
     verify: ["podman images"],
     hint: "podman pull image:tag",
   },
   {
-    desc: "Run container as devops.",
+    desc: "Run container named 'mycontainer' from ubi8 image in detached mode.",
     points: 20,
     cmds: [
       "podman run -d --name mycontainer registry.redhat.io/ubi8/ubi sleep infinity",
@@ -1655,46 +1596,46 @@ const questionPool = [
     hint: "podman run -d --name container_name image command",
   },
   {
-    desc: "Map host directory to container volume.",
+    desc: "Run container with host directory /host/path mapped to /container/path with SELinux context.",
     points: 20,
     cmds: [
-      "podman run -d -v /host/path:/container/path:Z --name mycontainer image",
+      "podman run -d -v /host/path:/container/path:Z --name mycontainer registry.redhat.io/ubi8/ubi sleep infinity",
     ],
     verify: ["podman inspect mycontainer | grep Mounts"],
     hint: "podman run -v /host:/container:Z",
   },
   {
-    desc: "Map second host directory.",
+    desc: "Run container with two host directories mapped to container paths.",
     points: 20,
     cmds: [
-      "podman run -d -v /host1:/container1:Z -v /host2:/container2:Z --name mycontainer image",
+      "podman run -d -v /host1:/container1:Z -v /host2:/container2:Z --name mycontainer registry.redhat.io/ubi8/ubi sleep infinity",
     ],
     verify: ["podman inspect mycontainer | grep -A2 Mounts"],
     hint: "Multiple -v options",
   },
   {
-    desc: "Verify container is running.",
+    desc: "Verify container 'mycontainer' is running.",
     points: 10,
     cmds: ["podman ps"],
     verify: ["podman ps | grep mycontainer"],
     hint: "podman ps shows running containers",
   },
   {
-    desc: "Generate systemd unit for container.",
+    desc: "Generate systemd unit file for container 'mycontainer'.",
     points: 20,
     cmds: ["podman generate systemd --name mycontainer --files --new"],
     verify: ["ls /etc/systemd/system/container-mycontainer.service"],
     hint: "podman generate systemd --name --files --new",
   },
   {
-    desc: "Enable container service for user.",
+    desc: "Enable and start container 'mycontainer' as user systemd service.",
     points: 20,
     cmds: ["systemctl --user enable --now container-mycontainer.service"],
     verify: ["systemctl --user status container-mycontainer.service"],
     hint: "systemctl --user enable --now",
   },
   {
-    desc: "Verify container starts after reboot.",
+    desc: "Verify container starts automatically after reboot by enabling user systemd service.",
     points: 20,
     cmds: [
       "systemctl --user daemon-reload",
@@ -1704,31 +1645,31 @@ const questionPool = [
     hint: "Enable user systemd service",
   },
   {
-    desc: "View container logs.",
+    desc: "View logs for container 'mycontainer'.",
     points: 15,
     cmds: ["podman logs mycontainer"],
     verify: ["podman logs mycontainer | head -20"],
     hint: "podman logs container_name",
   },
   {
-    desc: "Stop container.",
+    desc: "Stop container 'mycontainer'.",
     points: 15,
     cmds: ["podman stop mycontainer"],
     verify: ["podman ps -a | grep mycontainer"],
     hint: "podman stop container_name",
   },
   {
-    desc: "Remove container.",
+    desc: "Remove container 'mycontainer'.",
     points: 15,
     cmds: ["podman rm mycontainer"],
     verify: ["podman ps -a | grep mycontainer || echo 'removed'"],
     hint: "podman rm container_name",
   },
   {
-    desc: "Remove container image.",
+    desc: "Remove container image 'registry.redhat.io/ubi8/ubi'.",
     points: 15,
-    cmds: ["podman rmi image-name"],
-    verify: ["podman images | grep image-name || echo 'removed'"],
+    cmds: ["podman rmi registry.redhat.io/ubi8/ubi"],
+    verify: ["podman images | grep ubi || echo 'removed'"],
     hint: "podman rmi image_id_or_name",
   },
   {
@@ -1739,14 +1680,14 @@ const questionPool = [
     hint: "podman ps should show empty",
   },
   {
-    desc: "Check SELinux labels on container volumes.",
+    desc: "Check SELinux labels on container volume directory /host/path.",
     points: 15,
     cmds: ["ls -Z /host/path"],
     verify: ["ls -Z /host/path"],
     hint: "ls -Z shows SELinux context",
   },
   {
-    desc: "Adjust SELinux for container access.",
+    desc: "Adjust SELinux context for container access to /host/path directory.",
     points: 20,
     cmds: [
       "semanage fcontext -a -t container_file_t '/host/path(/.*)?'",
@@ -1756,91 +1697,91 @@ const questionPool = [
     hint: "Set container_file_t context",
   },
   {
-    desc: "Verify access inside container.",
+    desc: "Verify access inside container 'mycontainer' to /container/path directory.",
     points: 15,
     cmds: ["podman exec mycontainer ls /container/path"],
     verify: ["podman exec mycontainer ls /container/path"],
     hint: "podman exec container_name command",
   },
   {
-    desc: "Restart container service.",
+    desc: "Restart container service 'container-mycontainer.service' for user.",
     points: 15,
     cmds: ["systemctl --user restart container-mycontainer.service"],
     verify: ["systemctl --user status container-mycontainer.service"],
     hint: "systemctl --user restart",
   },
   {
-    desc: "Disable container service.",
+    desc: "Disable container service 'container-mycontainer.service' for user.",
     points: 15,
     cmds: ["systemctl --user disable container-mycontainer.service"],
     verify: ["systemctl --user is-enabled container-mycontainer.service"],
     hint: "systemctl --user disable",
   },
   {
-    desc: "Verify clean reboot.",
+    desc: "Verify clean system state: check failed services, journal errors, listening ports, and disk usage.",
     points: 20,
     cmds: ["systemctl --failed", "journalctl -p 3 -xb", "ss -tlnp", "df -h"],
     verify: ["systemctl --failed | grep '0 loaded'"],
     hint: "Check system health after reboot",
   },
   {
-    desc: "Check journal logs for errors.",
+    desc: "Check journal logs for errors in current boot.",
     points: 15,
     cmds: ["journalctl -p err -b"],
     verify: ["journalctl -p err -b | head -20"],
     hint: "journalctl -p priority -b (current boot)",
   },
   {
-    desc: "Verify firewall doesn't block container.",
+    desc: "Verify firewall doesn't block container ports and check container status.",
     points: 15,
     cmds: ["firewall-cmd --list-all", "podman ps"],
     verify: ["firewall-cmd --list-ports"],
     hint: "Check firewall rules and container status",
   },
   {
-    desc: "Validate NTP after reboot.",
+    desc: "Validate NTP time synchronization after reboot.",
     points: 15,
     cmds: ["timedatectl", "chronyc tracking"],
     verify: ["timedatectl | grep synchronized"],
     hint: "timedatectl shows time sync status",
   },
   {
-    desc: "Validate mounts after reboot.",
+    desc: "Validate all filesystem mounts after reboot.",
     points: 15,
     cmds: ["mount", "df -h"],
-    verify: ["mount | grep important_mount", "df -h /mnt/database"],
+    verify: ["mount | grep /mnt/database", "df -h /mnt/database"],
     hint: "Check mounted filesystems",
   },
   {
-    desc: "Validate swap after reboot.",
+    desc: "Validate swap is active after reboot.",
     points: 15,
     cmds: ["swapon --show", "free -h"],
     verify: ["swapon --show | grep sdb1"],
     hint: "swapon --show and free -h",
   },
   {
-    desc: "Validate SELinux after reboot.",
+    desc: "Validate SELinux is in enforcing mode after reboot.",
     points: 15,
     cmds: ["getenforce", "sestatus"],
     verify: ["getenforce"],
     hint: "getenforce should show enforcing",
   },
   {
-    desc: "Validate user logins.",
+    desc: "Validate user logins for 'alice' and 'bob'.",
     points: 15,
     cmds: ["id alice", "id bob", "su - alice -c 'whoami'"],
     verify: ["id alice", "su - alice -c 'echo success'"],
     hint: "Test user existence and login",
   },
   {
-    desc: "Validate sudo access.",
+    desc: "Validate sudo access for user 'alice'.",
     points: 15,
     cmds: ["sudo -l -U alice"],
     verify: ["sudo -l -U alice | grep ALL"],
     hint: "sudo -l -U username",
   },
   {
-    desc: "Final system audit.",
+    desc: "Final system audit: check failed services, errors, disk space, ports, firewall, containers, and SELinux.",
     points: 25,
     cmds: [
       "systemctl --failed",
@@ -1862,10 +1803,9 @@ function selectRandomTasks() {
   sanitizeCommandPatterns();
   generateCanonicalAnswers();
 
-  const poolCopy =
-    selectedCategory === "all"
-      ? [...questionPool]
-      : questionPool.filter((q) => q.category === selectedCategory);
+  const poolCopy = selectedCategory === "all"
+    ? [...questionPool]
+    : questionPool.filter((q) => q.category === selectedCategory);
 
   const numTarget = 20;
   const shuffled = poolCopy.slice().sort(() => Math.random() - 0.5);
@@ -1877,12 +1817,11 @@ function selectRandomTasks() {
     const normalizedDesc = rawDesc
       .replace(/\s*\((?:variant|cross-cat variant)[^)]+\)/gi, "")
       .trim();
-    const canonicalKey =
-      Array.isArray(q.canonical) && q.canonical[0]
-        ? q.canonical[0]
-        : Array.isArray(q.cmds)
-        ? q.cmds.join("||")
-        : "";
+    const canonicalKey = Array.isArray(q.canonical) && q.canonical[0]
+      ? q.canonical[0]
+      : Array.isArray(q.cmds)
+      ? q.cmds.join("||")
+      : "";
     const key = `${normalizedDesc}||${canonicalKey}`;
     if (seen.has(key)) continue;
     seen.add(key);
@@ -1910,9 +1849,7 @@ function startExam() {
 
   document.getElementById("welcomeScreen").classList.add("hidden");
   document.getElementById("examInterface").classList.remove("hidden");
-  document.getElementById(
-    "examNumber"
-  ).textContent = `Exam #${currentExamNumber}`;
+  document.getElementById("examNumber").textContent = `Exam #${currentExamNumber}`;
 
   renderTasks();
   startTimer();
@@ -1923,9 +1860,7 @@ function renderTasks() {
   taskList.innerHTML = tasks
     .map(
       (task) => `
-        <div class="task-card ${task.submitted ? "submitted" : ""}" id="task-${
-        task.id
-      }">
+        <div class="task-card ${task.submitted ? "submitted" : ""}" id="task-${task.id}">
           <div class="task-number">Task ${task.id}</div>
           <div class="task-description">${task.description}</div>
           <div class="task-points">Points: ${task.points}</div>
@@ -1946,16 +1881,10 @@ function renderTasks() {
               ${task.submitted ? "✓ Submitted" : "📤 Submit Solution"}
             </button>
 
-            <button class="hint-toggle" onclick="toggleHint(${
-              task.id
-            }, this)" style="margin-left:10px;">Show Hint</button>
-            <button class="hint-toggle" onclick="toggleAnswer(${
-              task.id
-            }, this)" style="margin-left:8px;">Show Answer</button>
+            <button class="hint-toggle" onclick="toggleHint(${task.id}, this)" style="margin-left:10px;">Show Hint</button>
+            <button class="hint-toggle" onclick="toggleAnswer(${task.id}, this)" style="margin-left:8px;">Show Answer</button>
             
-            <div class="solution-status ${task.status || ""}" id="status-${
-        task.id
-      }">
+            <div class="solution-status ${task.status || ""}" id="status-${task.id}">
               ${task.statusMessage || ""}
             </div>
           </div>
@@ -1999,9 +1928,7 @@ function checkSolution(task, solution) {
     .split("\n")
     .map((line) => line.trim())
     .filter((line) => line);
-  const expectedCommands = task.expectedCommands.map((cmd) =>
-    cmd.toLowerCase()
-  );
+  const expectedCommands = task.expectedCommands.map((cmd) => cmd.toLowerCase());
 
   let matchedCommands = 0;
   let totalRequired = expectedCommands.length;
@@ -2067,16 +1994,11 @@ function updateTimerDisplay() {
   const minutes = Math.floor((timeRemaining % 3600) / 60);
   const seconds = timeRemaining % 60;
 
-  const display = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
-    2,
-    "0"
-  )}:${String(seconds).padStart(2, "0")}`;
+  const display = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   const timerEl = document.getElementById("timerDisplay");
   timerEl.textContent = display;
 
-  document.getElementById("timeRemaining").textContent = `${Math.floor(
-    timeRemaining / 60
-  )} min`;
+  document.getElementById("timeRemaining").textContent = `${Math.floor(timeRemaining / 60)} min`;
 
   if (timeRemaining <= 900) {
     timerEl.className = "timer-display critical";
@@ -2093,19 +2015,11 @@ function submitExam() {
   const unanswered = tasks.filter((t) => !t.submitted).length;
 
   if (unanswered > 0) {
-    if (
-      !confirm(
-        `⚠️ Warning: ${unanswered} task(s) not submitted!\n\nUnanswered tasks will score 0 points.\n\nSubmit exam anyway?`
-      )
-    ) {
+    if (!confirm(`⚠️ Warning: ${unanswered} task(s) not submitted!\n\nUnanswered tasks will score 0 points.\n\nSubmit exam anyway?`)) {
       return;
     }
   } else {
-    if (
-      !confirm(
-        "📤 Submit exam for grading?\n\nYou cannot change answers after submission."
-      )
-    ) {
+    if (!confirm("📤 Submit exam for grading?\n\nYou cannot change answers after submission.")) {
       return;
     }
   }
@@ -2142,21 +2056,15 @@ function showResults() {
   const passed = totalScore >= 210;
 
   document.getElementById("finalScore").textContent = `${totalScore}/300`;
-  document.getElementById("finalScore").style.color = passed
-    ? "#059669"
-    : "#dc2626";
+  document.getElementById("finalScore").style.color = passed ? "#059669" : "#dc2626";
 
   const passBadge = document.getElementById("passBadge");
   if (passed) {
     passBadge.className = "pass-badge passed";
-    passBadge.innerHTML = `🎉 PASSED! You scored ${Math.round(
-      (totalScore / 300) * 100
-    )}%`;
+    passBadge.innerHTML = `🎉 PASSED! You scored ${Math.round((totalScore / 300) * 100)}%`;
   } else {
     passBadge.className = "pass-badge failed";
-    passBadge.innerHTML = `❌ FAILED. You need 210+ to pass (${Math.round(
-      (totalScore / 300) * 100
-    )}%)`;
+    passBadge.innerHTML = `❌ FAILED. You need 210+ to pass (${Math.round((totalScore / 300) * 100)}%)`;
   }
 
   const breakdown = document.getElementById("resultBreakdown");
@@ -2185,14 +2093,8 @@ function showResults() {
       return `
         <div class="result-item ${itemClass}">
           <div>
-            <strong>${icon} Task ${
-        task.id
-      }:</strong> ${task.description.substring(0, 60)}...
-            ${
-              !task.submitted
-                ? '<br><small style="color: #6b7280;">Not answered</small>'
-                : ""
-            }
+            <strong>${icon} Task ${task.id}:</strong> ${task.description.substring(0, 60)}...
+            ${!task.submitted ? '<br><small style="color: #6b7280;">Not answered</small>' : ""}
           </div>
           <div style="font-weight: bold; font-size: 18px;">
             ${scoreText}
@@ -2218,18 +2120,13 @@ function showResults() {
       </div>
       <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #e2e8f0;">
         <div style="font-size: 16px; color: #2d3748;">
-          <strong>Time Used:</strong> ${Math.floor(
-            (9000 - timeRemaining) / 60
-          )} minutes
+          <strong>Time Used:</strong> ${Math.floor((9000 - timeRemaining) / 60)} minutes
         </div>
         <div style="font-size: 14px; color: #718096; margin-top: 5px;">
           Average: ${(() => {
             const submittedCount = tasks.filter((t) => t.submitted).length;
             if (!submittedCount) return "N/A";
-            return (
-              ((9000 - timeRemaining) / 60 / submittedCount).toFixed(1) +
-              " min/task"
-            );
+            return ((9000 - timeRemaining) / 60 / submittedCount).toFixed(1) + " min/task";
           })()}
         </div>
       </div>
@@ -2274,9 +2171,7 @@ function downloadResults() {
   let report = `RHCSA EX200 Exam Results - Exam #${currentExamNumber - 1}\n`;
   report += `=================================================\n\n`;
   report += `Date: ${new Date().toLocaleString()}\n`;
-  report += `Final Score: ${totalScore}/300 (${Math.round(
-    (totalScore / 300) * 100
-  )}%)\n`;
+  report += `Final Score: ${totalScore}/300 (${Math.round((totalScore / 300) * 100)}%)\n`;
   report += `Result: ${passed ? "PASSED ✓" : "FAILED ✗"}\n`;
   report += `Passing Score: 210/300 (70%)\n`;
   report += `Time Used: ${timeUsed} minutes\n\n`;
@@ -2292,9 +2187,7 @@ function downloadResults() {
       ? "PARTIAL"
       : "INCORRECT";
 
-    report += `Task ${task.id}: ${status} - ${task.score || 0}/${
-      task.points
-    } points\n`;
+    report += `Task ${task.id}: ${status} - ${task.score || 0}/${task.points} points\n`;
     report += `Description: ${task.description}\n`;
     if (task.solution) {
       report += `Your Solution:\n${task.solution}\n`;
@@ -2318,9 +2211,7 @@ function downloadResults() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `RHCSA_Exam_${currentExamNumber - 1}_${
-    new Date().toISOString().split("T")[0]
-  }.txt`;
+  a.download = `RHCSA_Exam_${currentExamNumber - 1}_${new Date().toISOString().split("T")[0]}.txt`;
   a.click();
   URL.revokeObjectURL(url);
 }
