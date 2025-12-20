@@ -1,426 +1,564 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RHCSA EX300 Exam Simulator</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
     <!-- Welcome Screen -->
     <div id="welcomeScreen" class="container">
-        <header class="main-header">
-            <div class="logo-section">
-                <div class="logo">
-                    <i class="fab fa-redhat"></i>
-                    <h1>RHCSA EX300 Exam Simulator</h1>
-                </div>
-                <p class="tagline">Professional RHCSA Certification Preparation Platform</p>
-            </div>
-            <div class="header-actions">
-                <button class="btn btn-secondary" onclick="showCheatSheet()">
-                    <i class="fas fa-book"></i> Cheat Sheet
-                </button>
-                <button class="btn btn-secondary" onclick="showTips()">
-                    <i class="fas fa-lightbulb"></i> Tips
-                </button>
-                <button class="btn btn-secondary" onclick="resetHistory()">
-                    <i class="fas fa-trash-alt"></i> Reset History
-                </button>
-            </div>
-        </header>
+      <header class="main-header">
+        <div class="logo-section">
+          <div class="logo">
+            <i class="fab fa-redhat"></i>
+            <h1>RHCSA EX300 Exam Simulator</h1>
+          </div>
+          <p class="tagline">
+            Professional RHCSA Certification Preparation Platform
+          </p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary" onclick="showCheatSheet()">
+            <i class="fas fa-book"></i> Cheat Sheet
+          </button>
+          <button class="btn btn-secondary" onclick="showTips()">
+            <i class="fas fa-lightbulb"></i> Tips
+          </button>
+          <button class="btn btn-secondary" onclick="resetHistory()">
+            <i class="fas fa-trash-alt"></i> Reset History
+          </button>
+        </div>
+      </header>
 
-        <main class="welcome-content">
-            <div class="welcome-card">
-                <div class="welcome-header">
-                    <h2><i class="fas fa-trophy"></i> Red Hat Certified System Administrator</h2>
-                    <p class="exam-info">EX300 • 2.5 Hours • 300 Points • 70% to Pass</p>
-                </div>
-                
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="totalAttempts">0</div>
-                        <div class="stat-label">Total Attempts</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="highestScore">0/300</div>
-                        <div class="stat-label">Highest Score</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="avgScore">0/300</div>
-                        <div class="stat-label">Average Score</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="passRate">0%</div>
-                        <div class="stat-label">Pass Rate</div>
-                    </div>
-                </div>
+      <main class="welcome-content">
+        <div class="welcome-card">
+          <div class="welcome-header">
+            <h2>
+              <i class="fas fa-trophy"></i> Red Hat Certified System
+              Administrator
+            </h2>
+            <p class="exam-info">
+              EX300 • 2.5 Hours • 300 Points • 70% to Pass
+            </p>
+          </div>
 
-                <div class="category-section">
-                    <h3><i class="fas fa-folder-open"></i> Select Practice Category</h3>
-                    <div class="category-grid">
-                        <button class="category-btn active" data-cat="all" onclick="setPracticeCategory('all', this)">
-                            <i class="fas fa-globe"></i> All Topics
-                        </button>
-                        <button class="category-btn" data-cat="system-access" onclick="setPracticeCategory('system-access', this)">
-                            <i class="fas fa-terminal"></i> System Access
-                        </button>
-                        <button class="category-btn" data-cat="files-directories" onclick="setPracticeCategory('files-directories', this)">
-                            <i class="fas fa-folder"></i> Files & Directories
-                        </button>
-                        <button class="category-btn" data-cat="users-groups" onclick="setPracticeCategory('users-groups', this)">
-                            <i class="fas fa-users"></i> Users & Groups
-                        </button>
-                        <button class="category-btn" data-cat="permissions-acl" onclick="setPracticeCategory('permissions-acl', this)">
-                            <i class="fas fa-lock"></i> Permissions
-                        </button>
-                        <button class="category-btn" data-cat="processes" onclick="setPracticeCategory('processes', this)">
-                            <i class="fas fa-microchip"></i> Processes
-                        </button>
-                        <button class="category-btn" data-cat="services-daemons" onclick="setPracticeCategory('services-daemons', this)">
-                            <i class="fas fa-server"></i> Services
-                        </button>
-                        <button class="category-btn" data-cat="ssh" onclick="setPracticeCategory('ssh', this)">
-                            <i class="fas fa-network-wired"></i> SSH
-                        </button>
-                        <button class="category-btn" data-cat="logging" onclick="setPracticeCategory('logging', this)">
-                            <i class="fas fa-clipboard-list"></i> Logging
-                        </button>
-                        <button class="category-btn" data-cat="networking" onclick="setPracticeCategory('networking', this)">
-                            <i class="fas fa-wifi"></i> Networking
-                        </button>
-                        <button class="category-btn" data-cat="archiving" onclick="setPracticeCategory('archiving', this)">
-                            <i class="fas fa-file-archive"></i> Archiving
-                        </button>
-                        <button class="category-btn" data-cat="software" onclick="setPracticeCategory('software', this)">
-                            <i class="fas fa-box-open"></i> Software
-                        </button>
-                        <button class="category-btn" data-cat="file-systems" onclick="setPracticeCategory('file-systems', this)">
-                            <i class="fas fa-hdd"></i> File Systems
-                        </button>
-                        <button class="category-btn" data-cat="scripting" onclick="setPracticeCategory('scripting', this)">
-                            <i class="fas fa-code"></i> Scripting
-                        </button>
-                        <button class="category-btn" data-cat="scheduling" onclick="setPracticeCategory('scheduling', this)">
-                            <i class="fas fa-clock"></i> Scheduling
-                        </button>
-                        <button class="category-btn" data-cat="performance" onclick="setPracticeCategory('performance', this)">
-                            <i class="fas fa-tachometer-alt"></i> Performance
-                        </button>
-                        <button class="category-btn" data-cat="selinux" onclick="setPracticeCategory('selinux', this)">
-                            <i class="fas fa-shield-alt"></i> SELinux
-                        </button>
-                        <button class="category-btn" data-cat="storage-basic" onclick="setPracticeCategory('storage-basic', this)">
-                            <i class="fas fa-database"></i> Basic Storage
-                        </button>
-                        <button class="category-btn" data-cat="storage-lvm" onclick="setPracticeCategory('storage-lvm', this)">
-                            <i class="fas fa-layer-group"></i> LVM Storage
-                        </button>
-                        <button class="category-btn" data-cat="nas" onclick="setPracticeCategory('nas', this)">
-                            <i class="fas fa-share-alt"></i> NAS
-                        </button>
-                        <button class="category-btn" data-cat="boot" onclick="setPracticeCategory('boot', this)">
-                            <i class="fas fa-power-off"></i> Boot Process
-                        </button>
-                        <button class="category-btn" data-cat="firewall" onclick="setPracticeCategory('firewall', this)">
-                            <i class="fas fa-fire"></i> Firewall
-                        </button>
-                        <button class="category-btn" data-cat="containers" onclick="setPracticeCategory('containers', this)">
-                            <i class="fas fa-box"></i> Containers
-                        </button>
-                    </div>
-                </div>
-
-                <div class="action-buttons">
-                    <button class="btn btn-primary btn-large" onclick="startExam()">
-                        <i class="fas fa-play-circle"></i> Start New Exam (20 Tasks)
-                    </button>
-                    <button class="btn btn-secondary btn-large" onclick="startQuickPractice()">
-                        <i class="fas fa-bolt"></i> Quick Practice (5 Tasks)
-                    </button>
-                </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value" id="totalAttempts">0</div>
+              <div class="stat-label">Total Attempts</div>
             </div>
-
-            <div class="history-section" id="examHistorySection" style="display: none;">
-                <h3><i class="fas fa-history"></i> Recent Exam History</h3>
-                <div class="chart-container">
-                    <div class="chart-title">Score Progression</div>
-                    <div class="chart" id="scoreChart"></div>
-                </div>
-                <div class="history-list" id="examHistoryList"></div>
+            <div class="stat-card">
+              <div class="stat-value" id="highestScore">0/300</div>
+              <div class="stat-label">Highest Score</div>
             </div>
-        </main>
+            <div class="stat-card">
+              <div class="stat-value" id="avgScore">0/300</div>
+              <div class="stat-label">Average Score</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="passRate">0%</div>
+              <div class="stat-label">Pass Rate</div>
+            </div>
+          </div>
+
+          <div class="category-section">
+            <h3><i class="fas fa-folder-open"></i> Select Practice Category</h3>
+            <div class="category-grid">
+              <button
+                class="category-btn active"
+                data-cat="all"
+                onclick="setPracticeCategory('all', this)"
+              >
+                <i class="fas fa-globe"></i> All Topics
+              </button>
+              <button
+                class="category-btn"
+                data-cat="system-access"
+                onclick="setPracticeCategory('system-access', this)"
+              >
+                <i class="fas fa-terminal"></i> System Access
+              </button>
+              <button
+                class="category-btn"
+                data-cat="files-directories"
+                onclick="setPracticeCategory('files-directories', this)"
+              >
+                <i class="fas fa-folder"></i> Files & Directories
+              </button>
+              <button
+                class="category-btn"
+                data-cat="users-groups"
+                onclick="setPracticeCategory('users-groups', this)"
+              >
+                <i class="fas fa-users"></i> Users & Groups
+              </button>
+              <button
+                class="category-btn"
+                data-cat="permissions-acl"
+                onclick="setPracticeCategory('permissions-acl', this)"
+              >
+                <i class="fas fa-lock"></i> Permissions
+              </button>
+              <button
+                class="category-btn"
+                data-cat="processes"
+                onclick="setPracticeCategory('processes', this)"
+              >
+                <i class="fas fa-microchip"></i> Processes
+              </button>
+              <button
+                class="category-btn"
+                data-cat="services-daemons"
+                onclick="setPracticeCategory('services-daemons', this)"
+              >
+                <i class="fas fa-server"></i> Services
+              </button>
+              <button
+                class="category-btn"
+                data-cat="ssh"
+                onclick="setPracticeCategory('ssh', this)"
+              >
+                <i class="fas fa-network-wired"></i> SSH
+              </button>
+              <button
+                class="category-btn"
+                data-cat="logging"
+                onclick="setPracticeCategory('logging', this)"
+              >
+                <i class="fas fa-clipboard-list"></i> Logging
+              </button>
+              <button
+                class="category-btn"
+                data-cat="networking"
+                onclick="setPracticeCategory('networking', this)"
+              >
+                <i class="fas fa-wifi"></i> Networking
+              </button>
+              <button
+                class="category-btn"
+                data-cat="archiving"
+                onclick="setPracticeCategory('archiving', this)"
+              >
+                <i class="fas fa-file-archive"></i> Archiving
+              </button>
+              <button
+                class="category-btn"
+                data-cat="software"
+                onclick="setPracticeCategory('software', this)"
+              >
+                <i class="fas fa-box-open"></i> Software
+              </button>
+              <button
+                class="category-btn"
+                data-cat="file-systems"
+                onclick="setPracticeCategory('file-systems', this)"
+              >
+                <i class="fas fa-hdd"></i> File Systems
+              </button>
+              <button
+                class="category-btn"
+                data-cat="scripting"
+                onclick="setPracticeCategory('scripting', this)"
+              >
+                <i class="fas fa-code"></i> Scripting
+              </button>
+              <button
+                class="category-btn"
+                data-cat="scheduling"
+                onclick="setPracticeCategory('scheduling', this)"
+              >
+                <i class="fas fa-clock"></i> Scheduling
+              </button>
+              <button
+                class="category-btn"
+                data-cat="performance"
+                onclick="setPracticeCategory('performance', this)"
+              >
+                <i class="fas fa-tachometer-alt"></i> Performance
+              </button>
+              <button
+                class="category-btn"
+                data-cat="selinux"
+                onclick="setPracticeCategory('selinux', this)"
+              >
+                <i class="fas fa-shield-alt"></i> SELinux
+              </button>
+              <button
+                class="category-btn"
+                data-cat="storage-basic"
+                onclick="setPracticeCategory('storage-basic', this)"
+              >
+                <i class="fas fa-database"></i> Basic Storage
+              </button>
+              <button
+                class="category-btn"
+                data-cat="storage-lvm"
+                onclick="setPracticeCategory('storage-lvm', this)"
+              >
+                <i class="fas fa-layer-group"></i> LVM Storage
+              </button>
+              <button
+                class="category-btn"
+                data-cat="nas"
+                onclick="setPracticeCategory('nas', this)"
+              >
+                <i class="fas fa-share-alt"></i> NAS
+              </button>
+              <button
+                class="category-btn"
+                data-cat="boot"
+                onclick="setPracticeCategory('boot', this)"
+              >
+                <i class="fas fa-power-off"></i> Boot Process
+              </button>
+              <button
+                class="category-btn"
+                data-cat="firewall"
+                onclick="setPracticeCategory('firewall', this)"
+              >
+                <i class="fas fa-fire"></i> Firewall
+              </button>
+              <button
+                class="category-btn"
+                data-cat="containers"
+                onclick="setPracticeCategory('containers', this)"
+              >
+                <i class="fas fa-box"></i> Containers
+              </button>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button class="btn btn-primary btn-large" onclick="startExam()">
+              <i class="fas fa-play-circle"></i> Start New Exam (20 Tasks)
+            </button>
+            <button
+              class="btn btn-secondary btn-large"
+              onclick="startQuickPractice()"
+            >
+              <i class="fas fa-bolt"></i> Quick Practice (5 Tasks)
+            </button>
+          </div>
+        </div>
+
+        <div class="history-section" id="examHistorySection">
+          <h3><i class="fas fa-history"></i> Recent Exam History</h3>
+          <div class="chart-container">
+            <div class="chart-title">Score Progression</div>
+            <div class="chart" id="scoreChart"></div>
+          </div>
+          <div class="history-list" id="examHistoryList"></div>
+        </div>
+      </main>
     </div>
 
     <!-- Exam Interface -->
     <div id="examInterface" class="hidden container">
-        <header class="exam-header">
-            <div class="exam-info">
-                <div class="exam-title">
-                    <h2 id="examNumber">Exam #1</h2>
-                    <p class="exam-category" id="examCategory">All RHCSA Topics</p>
-                </div>
-                <div class="timer-container">
-                    <div class="timer-label">Time Remaining</div>
-                    <div class="timer-display" id="timerDisplay">02:30:00</div>
-                </div>
-            </div>
-            
-            <div class="progress-stats">
-                <div class="stat">
-                    <div class="stat-label">Tasks</div>
-                    <div class="stat-value"><span id="submittedCount">0</span>/20</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label">Score</div>
-                    <div class="stat-value"><span id="currentScore">0</span>/300</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label">Progress</div>
-                    <div class="stat-value" id="progressPercent">0%</div>
-                </div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar" id="progressBar"></div>
-                </div>
-            </div>
-
-            <div class="exam-controls">
-                <button class="btn btn-secondary" onclick="showCheatSheet()">
-                    <i class="fas fa-book"></i> Commands
-                </button>
-                <button class="btn btn-warning" onclick="returnToHome()">
-                    <i class="fas fa-home"></i> Return Home
-                </button>
-                <button class="btn btn-danger" onclick="submitExam()">
-                    <i class="fas fa-paper-plane"></i> Submit Exam
-                </button>
-            </div>
-        </header>
-
-        <div class="exam-content">
-            <!-- Left Side - Task List -->
-            <div class="task-list-container">
-                <h3><i class="fas fa-list-ol"></i> Exam Tasks</h3>
-                <div class="task-list" id="taskList">
-                    <!-- Tasks will be dynamically inserted here -->
-                </div>
-            </div>
-            
-            <!-- Right Side - Task Breakdown -->
-            <div class="task-breakdown">
-                <div class="breakdown-header">
-                    <h3><i class="fas fa-tasks"></i> Task Breakdown</h3>
-                    <div class="time-info">
-                        <span id="timeStatus">Good Pace</span> • <i class="fas fa-clock"></i> Avg: <span id="timePerTask">0:00</span>
-                    </div>
-                </div>
-                
-                <div class="breakdown-grid">
-                    <div class="breakdown-item correct">
-                        <div class="breakdown-count" id="correctCount">0</div>
-                        <div class="breakdown-label">Correct</div>
-                    </div>
-                    <div class="breakdown-item partial">
-                        <div class="breakdown-count" id="partialCount">0</div>
-                        <div class="breakdown-label">Partial</div>
-                    </div>
-                    <div class="breakdown-item incorrect">
-                        <div class="breakdown-count" id="incorrectCount">0</div>
-                        <div class="breakdown-label">Incorrect</div>
-                    </div>
-                    <div class="breakdown-item unanswered">
-                        <div class="breakdown-count" id="unansweredCount">0</div>
-                        <div class="breakdown-label">Unanswered</div>
-                    </div>
-                </div>
-                
-                <div class="time-checkpoints">
-                    <h4><i class="fas fa-flag-checkered"></i> Time Checkpoints</h4>
-                    <div class="checkpoints-grid">
-                        <div class="checkpoint">
-                            <div class="checkpoint-time">30 min</div>
-                            <div class="checkpoint-target">6+ tasks</div>
-                            <div class="checkpoint-status" id="checkpoint1">⏳</div>
-                        </div>
-                        <div class="checkpoint">
-                            <div class="checkpoint-time">60 min</div>
-                            <div class="checkpoint-target">12+ tasks</div>
-                            <div class="checkpoint-status" id="checkpoint2">⏳</div>
-                        </div>
-                        <div class="checkpoint">
-                            <div class="checkpoint-time">90 min</div>
-                            <div class="checkpoint-target">17+ tasks</div>
-                            <div class="checkpoint-status" id="checkpoint3">⏳</div>
-                        </div>
-                        <div class="checkpoint">
-                            <div class="checkpoint-time">120 min</div>
-                            <div class="checkpoint-target">All tasks</div>
-                            <div class="checkpoint-status" id="checkpoint4">⏳</div>
-                        </div>
-                        <div class="checkpoint">
-                            <div class="checkpoint-time">135 min</div>
-                            <div class="checkpoint-target">Review</div>
-                            <div class="checkpoint-status" id="checkpoint5">⏳</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <header class="exam-header">
+        <div class="exam-info">
+          <div class="exam-title">
+            <h2 id="examNumber">Exam #1</h2>
+            <p class="exam-category" id="examCategory">All RHCSA Topics</p>
+          </div>
+          <div class="timer-container">
+            <div class="timer-label">Time Remaining</div>
+            <div class="timer-display" id="timerDisplay">02:30:00</div>
+          </div>
         </div>
+
+        <div class="progress-stats">
+          <div class="stat">
+            <div class="stat-label">Tasks</div>
+            <div class="stat-value"><span id="submittedCount">0</span>/20</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Score</div>
+            <div class="stat-value"><span id="currentScore">0</span>/300</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Progress</div>
+            <div class="stat-value" id="progressPercent">0%</div>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+        </div>
+
+        <div class="exam-controls">
+          <button class="btn btn-secondary" onclick="showCheatSheet()">
+            <i class="fas fa-book"></i> Commands
+          </button>
+          <button class="btn btn-warning" onclick="returnToHome()">
+            <i class="fas fa-home"></i> Return Home
+          </button>
+          <button class="btn btn-danger" onclick="submitExam()">
+            <i class="fas fa-paper-plane"></i> Submit Exam
+          </button>
+        </div>
+      </header>
+
+      <div class="exam-content">
+        <!-- Left Side - Task List -->
+        <div class="task-list-container">
+          <h3><i class="fas fa-list-ol"></i> Exam Tasks</h3>
+          <div class="task-list" id="taskList">
+            <!-- Tasks will be dynamically inserted here -->
+          </div>
+        </div>
+
+        <!-- Right Side - Task Breakdown -->
+        <div class="task-breakdown">
+          <div class="breakdown-header">
+            <h3><i class="fas fa-tasks"></i> Task Breakdown</h3>
+            <div class="time-info">
+              <span id="timeStatus">Good Pace</span> •
+              <i class="fas fa-clock"></i> Avg:
+              <span id="timePerTask">0:00</span>
+            </div>
+          </div>
+
+          <div class="breakdown-grid">
+            <div class="breakdown-item correct">
+              <div class="breakdown-count" id="correctCount">0</div>
+              <div class="breakdown-label">Correct</div>
+            </div>
+            <div class="breakdown-item partial">
+              <div class="breakdown-count" id="partialCount">0</div>
+              <div class="breakdown-label">Partial</div>
+            </div>
+            <div class="breakdown-item incorrect">
+              <div class="breakdown-count" id="incorrectCount">0</div>
+              <div class="breakdown-label">Incorrect</div>
+            </div>
+            <div class="breakdown-item unanswered">
+              <div class="breakdown-count" id="unansweredCount">0</div>
+              <div class="breakdown-label">Unanswered</div>
+            </div>
+          </div>
+
+          <div class="time-checkpoints">
+            <h4><i class="fas fa-flag-checkered"></i> Time Checkpoints</h4>
+            <div class="checkpoints-grid">
+              <div class="checkpoint">
+                <div class="checkpoint-time">30 min</div>
+                <div class="checkpoint-target">6+ tasks</div>
+                <div class="checkpoint-status" id="checkpoint1">⏳</div>
+              </div>
+              <div class="checkpoint">
+                <div class="checkpoint-time">60 min</div>
+                <div class="checkpoint-target">12+ tasks</div>
+                <div class="checkpoint-status" id="checkpoint2">⏳</div>
+              </div>
+              <div class="checkpoint">
+                <div class="checkpoint-time">90 min</div>
+                <div class="checkpoint-target">17+ tasks</div>
+                <div class="checkpoint-status" id="checkpoint3">⏳</div>
+              </div>
+              <div class="checkpoint">
+                <div class="checkpoint-time">120 min</div>
+                <div class="checkpoint-target">All tasks</div>
+                <div class="checkpoint-status" id="checkpoint4">⏳</div>
+              </div>
+              <div class="checkpoint">
+                <div class="checkpoint-time">135 min</div>
+                <div class="checkpoint-target">Review</div>
+                <div class="checkpoint-status" id="checkpoint5">⏳</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Results Modal -->
     <div id="resultsModal" class="modal hidden">
-        <div class="modal-content results-modal">
-            <div class="modal-header">
-                <h2><i class="fas fa-chart-bar"></i> Exam Results</h2>
-                <button class="close-modal" onclick="restartExam()">&times;</button>
-            </div>
-            
-            <div class="results-summary">
-                <div class="score-card">
-                    <div class="final-score" id="finalScore">0/300</div>
-                    <div class="pass-badge" id="passBadge"></div>
-                </div>
-                
-                <div class="performance-stats">
-                    <div class="perf-stat">
-                        <div class="perf-label">Accuracy</div>
-                        <div class="perf-value" id="accuracyRate">0%</div>
-                    </div>
-                    <div class="perf-stat">
-                        <div class="perf-label">Time Used</div>
-                        <div class="perf-value" id="timeUsed">0 min</div>
-                    </div>
-                    <div class="perf-stat">
-                        <div class="perf-label">Task Speed</div>
-                        <div class="perf-value" id="taskSpeed">0 min/task</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="results-details">
-                <div class="detail-section">
-                    <h3><i class="fas fa-list-check"></i> Task Breakdown</h3>
-                    <div class="breakdown-list" id="resultBreakdown"></div>
-                </div>
-                
-                <div class="detail-section">
-                    <h3><i class="fas fa-exclamation-triangle"></i> Weakness Analysis</h3>
-                    <div class="weakness-list" id="weaknessList"></div>
-                </div>
-            </div>
-
-            <div class="results-actions">
-                <button class="btn btn-secondary" onclick="reviewExam()">
-                    <i class="fas fa-search"></i> Review Answers
-                </button>
-                <button class="btn btn-primary" onclick="practiceWeakness()">
-                    <i class="fas fa-dumbbell"></i> Practice Weak Areas
-                </button>
-                <button class="btn btn-secondary" onclick="downloadResults()">
-                    <i class="fas fa-download"></i> Download Results
-                </button>
-                <button class="btn btn-success" onclick="restartExam()">
-                    <i class="fas fa-redo"></i> New Exam
-                </button>
-            </div>
+      <div class="modal-content results-modal">
+        <div class="modal-header">
+          <h2><i class="fas fa-chart-bar"></i> Exam Results</h2>
+          <button class="close-modal" onclick="restartExam()">&times;</button>
         </div>
+
+        <div class="results-summary">
+          <div class="score-card">
+            <div class="final-score" id="finalScore">0/300</div>
+            <div class="pass-badge" id="passBadge"></div>
+          </div>
+
+          <div class="performance-stats">
+            <div class="perf-stat">
+              <div class="perf-label">Accuracy</div>
+              <div class="perf-value" id="accuracyRate">0%</div>
+            </div>
+            <div class="perf-stat">
+              <div class="perf-label">Time Used</div>
+              <div class="perf-value" id="timeUsed">0 min</div>
+            </div>
+            <div class="perf-stat">
+              <div class="perf-label">Task Speed</div>
+              <div class="perf-value" id="taskSpeed">0 min/task</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="results-details">
+          <div class="detail-section">
+            <h3><i class="fas fa-list-check"></i> Task Breakdown</h3>
+            <div class="breakdown-list" id="resultBreakdown"></div>
+          </div>
+
+          <div class="detail-section">
+            <h3>
+              <i class="fas fa-exclamation-triangle"></i> Weakness Analysis
+            </h3>
+            <div class="weakness-list" id="weaknessList"></div>
+          </div>
+        </div>
+
+        <div class="results-actions">
+          <button class="btn btn-secondary" onclick="reviewExam()">
+            <i class="fas fa-search"></i> Review Answers
+          </button>
+          <button class="btn btn-primary" onclick="practiceWeakness()">
+            <i class="fas fa-dumbbell"></i> Practice Weak Areas
+          </button>
+          <button class="btn btn-secondary" onclick="downloadResults()">
+            <i class="fas fa-download"></i> Download Results
+          </button>
+          <button class="btn btn-success" onclick="restartExam()">
+            <i class="fas fa-redo"></i> New Exam
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Cheat Sheet Modal -->
     <div id="cheatSheetModal" class="modal hidden">
-        <div class="modal-content cheat-sheet-modal">
-            <div class="modal-header">
-                <h2><i class="fas fa-book"></i> RHCSA Command Cheat Sheet</h2>
-                <button class="close-modal" onclick="hideCheatSheet()">&times;</button>
-            </div>
-            <div class="modal-body" id="cheatSheetContent">
-                <!-- Cheat sheet content will be dynamically inserted -->
-            </div>
+      <div class="modal-content cheat-sheet-modal">
+        <div class="modal-header">
+          <h2><i class="fas fa-book"></i> RHCSA Command Cheat Sheet</h2>
+          <button class="close-modal" onclick="hideCheatSheet()">
+            &times;
+          </button>
         </div>
+        <div class="modal-body" id="cheatSheetContent">
+          <!-- Cheat sheet content will be dynamically inserted -->
+        </div>
+      </div>
     </div>
 
     <!-- Tips Modal -->
     <div id="tipsModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-lightbulb"></i> Exam Tips</h2>
-                <button class="close-modal" onclick="closeTips()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="tips-container">
-                    <div class="tip-card">
-                        <div class="tip-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="tip-content">
-                            <h3>Time Management</h3>
-                            <p>Allocate ~7 minutes per task. Use the time checkpoints to stay on track.</p>
-                        </div>
-                    </div>
-                    <div class="tip-card">
-                        <div class="tip-icon">
-                            <i class="fas fa-check-double"></i>
-                        </div>
-                        <div class="tip-content">
-                            <h3>Verification</h3>
-                            <p>Always verify your work with appropriate commands before submitting.</p>
-                        </div>
-                    </div>
-                    <div class="tip-card">
-                        <div class="tip-icon">
-                            <i class="fas fa-terminal"></i>
-                        </div>
-                        <div class="tip-content">
-                            <h3>Command Syntax</h3>
-                            <p>Pay attention to command options and arguments. Use --help for unfamiliar commands.</p>
-                        </div>
-                    </div>
-                    <div class="tip-card">
-                        <div class="tip-icon">
-                            <i class="fas fa-save"></i>
-                        </div>
-                        <div class="tip-content">
-                            <h3>Save Your Work</h3>
-                            <p>Submit each task as you complete it. Unanswered tasks score 0 points.</p>
-                        </div>
-                    </div>
-                    <div class="tip-card">
-                        <div class="tip-icon">
-                            <i class="fas fa-undo"></i>
-                        </div>
-                        <div class="tip-content">
-                            <h3>Practice Weak Areas</h3>
-                            <p>Use the weakness analysis after each exam to focus your practice.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2><i class="fas fa-lightbulb"></i> Exam Tips</h2>
+          <button class="close-modal" onclick="closeTips()">&times;</button>
         </div>
+        <div class="modal-body">
+          <div class="tips-container">
+            <div class="tip-card">
+              <div class="tip-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="tip-content">
+                <h3>Time Management</h3>
+                <p>
+                  Allocate ~7 minutes per task. Use the time checkpoints to stay
+                  on track.
+                </p>
+              </div>
+            </div>
+            <div class="tip-card">
+              <div class="tip-icon">
+                <i class="fas fa-check-double"></i>
+              </div>
+              <div class="tip-content">
+                <h3>Verification</h3>
+                <p>
+                  Always verify your work with appropriate commands before
+                  submitting.
+                </p>
+              </div>
+            </div>
+            <div class="tip-card">
+              <div class="tip-icon">
+                <i class="fas fa-terminal"></i>
+              </div>
+              <div class="tip-content">
+                <h3>Command Syntax</h3>
+                <p>
+                  Pay attention to command options and arguments. Use --help for
+                  unfamiliar commands.
+                </p>
+              </div>
+            </div>
+            <div class="tip-card">
+              <div class="tip-icon">
+                <i class="fas fa-save"></i>
+              </div>
+              <div class="tip-content">
+                <h3>Save Your Work</h3>
+                <p>
+                  Submit each task as you complete it. Unanswered tasks score 0
+                  points.
+                </p>
+              </div>
+            </div>
+            <div class="tip-card">
+              <div class="tip-icon">
+                <i class="fas fa-undo"></i>
+              </div>
+              <div class="tip-content">
+                <h3>Practice Weak Areas</h3>
+                <p>
+                  Use the weakness analysis after each exam to focus your
+                  practice.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Footer -->
     <footer class="main-footer">
-        <div class="footer-content">
-            <div class="footer-info">
-                <p><i class="fab fa-redhat"></i> RHCSA EX300 Exam Simulator</p>
-                <p>This is an unofficial practice tool for Red Hat Certified System Administrator certification.</p>
-            </div>
-            <div class="footer-developer">
-                <p>Developed and Maintained by <strong>samiulAsumel</strong></p>
-                <p class="footer-links">
-                    <a href="#" onclick="showTips()"><i class="fas fa-question-circle"></i> Help</a>
-                    <span class="separator">|</span>
-                    <a href="#" onclick="showCheatSheet()"><i class="fas fa-book"></i> Commands</a>
-                    <span class="separator">|</span>
-                    <a href="#" onclick="resetHistory()"><i class="fas fa-trash-alt"></i> Reset Data</a>
-                </p>
-            </div>
+      <div class="footer-content">
+        <div class="footer-info">
+          <p><i class="fab fa-redhat"></i> RHCSA EX300 Exam Simulator</p>
+          <p>
+            This is an unofficial practice tool for Red Hat Certified System
+            Administrator certification.
+          </p>
         </div>
+        <div class="footer-developer">
+          <p>Developed and Maintained by <strong>samiulAsumel</strong></p>
+          <p class="footer-links">
+            <a href="#" onclick="showTips()"
+              ><i class="fas fa-question-circle"></i> Help</a
+            >
+            <span class="separator">|</span>
+            <a href="#" onclick="showCheatSheet()"
+              ><i class="fas fa-book"></i> Commands</a
+            >
+            <span class="separator">|</span>
+            <a href="#" onclick="resetHistory()"
+              ><i class="fas fa-trash-alt"></i> Reset Data</a
+            >
+          </p>
+        </div>
+      </div>
     </footer>
 
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
