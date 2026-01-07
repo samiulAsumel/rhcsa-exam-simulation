@@ -560,5 +560,62 @@
     </footer>
 
     <script src="script.js"></script>
+
+    <!-- Floating Back to Top Button -->
+    <button id="backToTopBtn" class="back-to-top-btn" onclick="scrollToTop()">
+      ↑ TOP
+    </button>
+
+    <script>
+      (function () {
+        if (window._backToTopInstalled) return;
+        window._backToTopInstalled = true;
+        window.scrollToTop =
+          window.scrollToTop ||
+          function () {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          };
+        const btn = document.getElementById("backToTopBtn");
+        if (!btn) return;
+        btn.style.display = "none";
+        window.addEventListener("scroll", function () {
+          btn.style.display = window.pageYOffset > 300 ? "flex" : "none";
+        });
+      })();
+    </script>
+
+    <style>
+      .back-to-top-btn {
+        display: none;
+        position: fixed;
+        bottom: 40px;
+        right: 40px;
+        z-index: 99;
+        width: 60px;
+        height: 60px;
+        border: none;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        cursor: pointer;
+        font-size: 24px;
+        font-weight: bold;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        opacity: 0.95;
+      }
+      .back-to-top-btn:hover {
+        transform: translateY(-5px) scale(1.1);
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        box-shadow: 0 12px 30px rgba(102, 126, 234, 0.6);
+        opacity: 1;
+      }
+      .back-to-top-btn:active {
+        transform: translateY(-2px) scale(1.05);
+      }
+    </style>
   </body>
 </html>
